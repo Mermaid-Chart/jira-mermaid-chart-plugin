@@ -1,2 +1,2 @@
 # jira-mermaid-chart-plugin
-A Mermaid Chadt plugin for JIra
+A Mermaid Chart plugin for JIra
