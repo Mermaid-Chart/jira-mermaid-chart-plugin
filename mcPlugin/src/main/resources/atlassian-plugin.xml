@@ -36,6 +36,12 @@
     <resource type="velocity" name="view" location="/templates/admin.vm"/>
   </adminPage>
 
+  <web-item name="My Plugin Settings" i18n-name-key="my-plugin-settings.name" key="my-plugin-settings" section="system.admin/globalsettings" weight="1000">
+      <description key="my-plugin-settings.description">My Plugin Settings</description>
+      <label key="Mermaid Chart Plugin Settings">My Plugin Settings</label>
+      <link linkId="my-plugin-settings-link">/plugins/servlet/my-plugin/configuration</link>
+  </web-item>
+
   <servlet name="My Plugin Configuration" i18n-name-key="my-plugin-configuration.name" key="my-plugin-configuration" class="com.atlassian.tutorial.mcPlugin.config.MyPluginConfigurationServlet">
       <description key="my-plugin-configuration.description">The Plugin Configuration Page</description>
       <url-pattern>/config</url-pattern>
