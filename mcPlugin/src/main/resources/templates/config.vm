@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Plugin Configuration</title>
+</head>
+<body>
+    <h2>Plugin Configuration</h2>
+    <form action="configure" method="post">
+        <label for="base-url">Base URL:</label><br>
+        <input type="text" id="base-url" name="base-url" value="$baseURL"><br>
+        <label for="token">Token:</label><br>
+        <input type="text" id="token" name="token" value="$token"><br>
+        <input type="submit" value="Save">
+    </form>
+</body>
+</html>

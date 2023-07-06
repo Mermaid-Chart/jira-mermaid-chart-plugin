@@ -7,7 +7,6 @@
     <vendor name="${project.organization.name}" url="${project.organization.url}"/>
     <param name="plugin-icon">images/mermaid-icon-16.png</param>
     <param name="plugin-logo">images/mermaid-icon-32.png</param>
-    <param name="configure.url">/admin/plugins/gmaps/configurePlugin.action</param>
   </plugin-info>
   <!-- add our i18n resource -->
   <resource type="i18n" name="i18n" location="mcPlugin"/>
@@ -32,4 +31,16 @@
     <label key="my-item.label"/>
     <link linkId="my-item-link"/>
   </web-item>
+  <adminPage key="plugin-admin" name="Plugin Administration" i18n-name-key="plugin-admin.name">
+    <description key="plugin-admin.description">Plugin Administration</description>
+    <resource type="velocity" name="view" location="/templates/admin.vm"/>
+  </adminPage>
+
+  <servlet name="My Plugin Configuration" i18n-name-key="my-plugin-configuration.name" key="my-plugin-configuration" class="com.atlassian.tutorial.mcPlugin.config.MyPluginConfigurationServlet">
+      <description key="my-plugin-configuration.description">The Plugin Configuration Page</description>
+      <url-pattern>/config</url-pattern>
+  </servlet>
+
+  -->
+
 </atlassian-plugin>
