@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2"> 
-  <plugin-info> 
-    <description>${project.description}</description>  
-    <version>${project.version}</version>  
-    <vendor name="${project.organization.name}" url="${project.organization.url}"/>  
-    <param name="plugin-icon">images/mermaid-icon-16.png</param>  
-    <param name="plugin-logo">images/mermaid-icon-32.png</param> 
-  </plugin-info>  
-  <!-- add our i18n resource -->  
-  <resource type="i18n" name="i18n" location="mermaidchart-plugin"/>  
-  <!-- add our web resources -->  
-  <web-resource key="mermaidchart-plugin-resources" name="mermaidchart-plugin Web Resources"> 
-    <dependency>com.atlassian.auiplugin:ajs</dependency>  
-    <resource type="download" name="mermaidchart-plugin.css" location="/css/mermaidchart-plugin.css"/>  
-    <resource type="download" name="mermaidchart-plugin.js" location="/js/mermaidchart-plugin.js"/>  
-    <resource type="download" name="images/" location="/images"/>  
-    <context>mermaidchart-plugin</context> 
-  </web-resource>  
-  <servlet name="Mermaid Chart Ops" i18n-name-key="mermaid-chart-ops.name" key="mermaid-chart-ops" class="com.plugin.mermaidchart.servlet.MermaidChartOps"> 
-    <description key="mermaid-chart-ops.description">The Mermaid Chart Ops Plugin</description>  
-    <url-pattern>/mermaidchartops</url-pattern> 
+<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
+  <plugin-info>
+    <description>${project.description}</description>
+    <version>${project.version}</version>
+    <vendor name="${project.organization.name}" url="${project.organization.url}"/>
+    <param name="plugin-icon">images/mermaid-icon-16.png</param>
+    <param name="plugin-logo">images/mermaid-icon-32.png</param>
+  </plugin-info>
+
+
+  <!-- add our i18n resource -->
+  <resource type="i18n" name="i18n" location="mermaidchart-plugin"/>
+  <!-- add our web resources -->
+  <web-resource key="mermaidchart-plugin-resources" name="mermaidchart-plugin Web Resources">
+    <dependency>com.atlassian.auiplugin:ajs</dependency>
+    <resource type="download" name="mermaidchart-plugin.css" location="/css/mermaidchart-plugin.css"/>
+    <resource type="download" name="mermaidchart-plugin.js" location="/js/mermaidchart-plugin.js"/>
+    <resource type="download" name="images/" location="/images"/>
+    <context>mermaidchart-plugin</context>
+  </web-resource>
+  <servlet name="Mermaid Chart Ops" i18n-name-key="mermaid-chart-ops.name" key="mermaid-chart-ops" class="com.plugin.mermaidchart.servlet.MermaidChartOps">
+    <description key="mermaid-chart-ops.description">The Mermaid Chart Ops Plugin</description>
+    <url-pattern>/mermaidchartops</url-pattern>
   </servlet>
 </atlassian-plugin>
