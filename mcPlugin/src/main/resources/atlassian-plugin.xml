@@ -31,22 +31,16 @@
     <label key="my-item.label"/>
     <link linkId="my-item-link"/>
   </web-item>
-  <adminPage key="plugin-admin" name="Plugin Administration" i18n-name-key="plugin-admin.name">
-    <description key="plugin-admin.description">Plugin Administration</description>
-    <resource type="velocity" name="view" location="/templates/admin.vm"/>
-  </adminPage>
-
-  <web-item name="My Plugin Settings" i18n-name-key="my-plugin-settings.name" key="my-plugin-settings" section="system.admin/globalsettings" weight="1000">
-      <description key="my-plugin-settings.description">My Plugin Settings</description>
-      <label key="Mermaid Chart Plugin Settings">My Plugin Settings</label>
-      <link linkId="my-plugin-settings-link">/plugins/servlet/my-plugin/configuration</link>
+  <web-item name="My Configuration Tab" key="My-configuration-tab" section="system.admin/globalsettings">
+    <label key="My Configuration">My Configuration</label>
+    <link linkId="My-configuration-tab-link">/plugins/servlet/settings/configservlet</link>
+    <tooltip key="My-configuration-tab.tooltip">My Configuration</tooltip>
   </web-item>
-
-  <servlet name="My Plugin Configuration" i18n-name-key="my-plugin-configuration.name" key="my-plugin-configuration" class="com.atlassian.tutorial.mcPlugin.config.MyPluginConfigurationServlet">
-      <description key="my-plugin-configuration.description">The Plugin Configuration Page</description>
-      <url-pattern>/config</url-pattern>
+  <servlet name="My Config Servlet Module" i18n-name-key="my-config-servlet.name" key="my-config-servlet" class="com.atlassian.tutorial.mcPlugin.settings.MyPluginConfigurationServlet">
+    <description key="my-config-servlet.description">The My Config Servlet Plugin</description>
+    <url-pattern>/settings/configservlet</url-pattern>
   </servlet>
 
-  -->
+
 
 </atlassian-plugin>
