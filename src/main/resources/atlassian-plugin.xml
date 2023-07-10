@@ -20,6 +20,10 @@
     <resource type="download" name="images/" location="/images"/>
     <context>mermaidchart-plugin</context>
   </web-resource>
+  <web-item key="mermaidchart-settings-link" name="Mermaid Chart Settings Link" section="system.top.navigation.bar" weight="1000">
+    <label key="Mermaid Chart Settings">Mermaid Chart Settings</label>
+    <link>/plugins/servlet/mermaidchartops</link>
+  </web-item>
   <servlet name="Mermaid Chart Ops" i18n-name-key="mermaid-chart-ops.name" key="mermaid-chart-ops" class="com.plugin.mermaidchart.servlet.MermaidChartOps">
     <description key="mermaid-chart-ops.description">The Mermaid Chart Ops Plugin</description>
     <url-pattern>/mermaidchartops</url-pattern>
