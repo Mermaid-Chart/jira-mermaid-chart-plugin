@@ -18,6 +18,25 @@ public class MermaidChartOps extends HttpServlet {
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException {
     resp.setContentType("text/html");
-    resp.getWriter().write("<html><body>Hello from MermaidChart</body></html>");
+    resp
+      .getWriter()
+      .write(
+        "<html><body>" +
+        "<form method='post'>" +
+        "Base URL: <input type='text' name='baseUrl'><br>" +
+        "Token: <input type='text' name='token'><br>" +
+        "<input type='submit' value='Submit'>" +
+        "</form>" +
+        "</body></html>"
+      );
+  }
+
+  @Override
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    throws ServletException, IOException {
+    String baseUrl = req.getParameter("baseUrl");
+    String token = req.getParameter("token");
+    // Store these values somewhere, like in a database
+    // ...
   }
 }
