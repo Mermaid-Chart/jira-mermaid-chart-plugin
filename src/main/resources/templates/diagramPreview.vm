@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>$i18n.getText("mermaid-chart-ops.diagrams-page-title")</title>
+    <meta name="decorator" content="atl.popup"/>
+    $webResourceManager.requireResource("com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-plugin-resources")
+  </head>
+  <body>
+  <div class="main">
+        <!-- Sidebar-->
+  <div id="sidebar-wrapper">
+        <div class="list-group">
+          <a class="list-group-item active" href="/jira/plugins/servlet/diagrampreview">Preview Diagram</a>
+          <a class="list-group-item" href="/jira/plugins/servlet/resourceslisting">Mermaid Chart</a>
+        </div>
+    	</div>
+      <div>
+  <h1>$title</h1>
+  <img id="diagramImage" class="responsive" src=$imgURL alt="Document not found" />
+  <button onclick="syncImage(event, '$documentID', '$title')">sync</button>
+  <button onclick="editImage('$projectID', '$documentID')">Edit</button>
+  </div>
+  </div>
+  </body>
+</html>

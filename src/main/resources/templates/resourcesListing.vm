@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>$i18n.getText("mermaid-chart-ops.listing-page-title")</title>
+    <meta name="decorator" content="atl.popup"/>
+    $webResourceManager.requireResource("com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-plugin-resources")
+  </head>
+  <body>
+
+    <div class="main">
+        <!-- Sidebar-->
+      <div id="sidebar-wrapper">
+        <div class="list-group">
+          <a class="list-group-item" href="/jira/plugins/servlet/mermaidchartops">Token Settings</a>
+          <a class="list-group-item active" href="/jira/plugins/servlet/resourceslisting">Mermaid Chart</a>
+        </div>
+    	</div>
+
+        <!-- page content        -->
+      <div class="dropdown-wrapper">
+        <div class="drop-down">
+          $rest.setParams()
+          #set($projects = $rest.getProjects())
+					<select class="main-select" id="resourcesSelect" onchange="diagramResource()">
+						<option value="" disabled selected>Select Projects...</option>
+            #foreach($project in $projects)
+							<option value="$project.getId()">$project.getTitle()</option>
+              <script>
+                  diagramResource('$project.getId()', '$project.getTitle()', 'true')
+              </script> 
+						#end
+          </select>
+
+          <div class="input-filter">
+            <input type="text" class="filter" oninput="filterDiagrams()" id="filterText" placeholder="Filter...">      
+          </div>
+            <!-- Scrollable list -->
+          <div class="list">
+            <div class="list-drop-down">
+							#foreach($project in $projects)
+							  <button id="pButton" class="dropbtn" onclick="clickList('$project.getId()', '$project.getTitle()')"><span id="arrow2">&#9658;</span>$project.getTitle()</button>
+							#end	
+              <!-- Dropdown content -->
+            <ul class="dropdown-content" id="list-content">
+							</ul>			
+						</div>
+                
+          </div>
+            <!-- insert btn -->
+          <div class="insert-btn">
+            <button class="" onclick="showDiagram()">Insert</button>
+          </div>
+      </div>
+	  </div>
+  </body>
+</html>

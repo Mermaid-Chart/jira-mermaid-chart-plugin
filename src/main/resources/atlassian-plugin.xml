@@ -11,21 +11,40 @@
 
 
   <!-- add our i18n resource -->
+  <!-- localization property file -->
+  <!-- This line of code represents mermaidchart-plugin.properties file -->
   <resource type="i18n" name="i18n" location="mermaidchart-plugin"/>
+  
   <!-- add our web resources -->
   <web-resource key="mermaidchart-plugin-resources" name="mermaidchart-plugin Web Resources">
     <dependency>com.atlassian.auiplugin:ajs</dependency>
-    <resource type="download" name="mermaidchart-plugin.css" location="/css/mermaidchart-plugin.css"/>
-    <resource type="download" name="mermaidchart-plugin.js" location="/js/mermaidchart-plugin.js"/>
+    <resource type="download" name="mermaidchart-plugin.css" location="css/mermaidchart-plugin.css"/>
+    <resource type="download" name="mermaidchart-plugin.js" location="js/mermaidchart-plugin.js"/>
     <resource type="download" name="images/" location="/images"/>
     <context>mermaidchart-plugin</context>
   </web-resource>
   <web-item key="mermaidchart-settings-link" name="Mermaid Chart Settings Link" section="system.top.navigation.bar" weight="1000">
-    <label key="Mermaid Chart Settings">Mermaid Chart Settings</label>
+    <label key="Mermaid Chart Settings">Mermaid Chart</label>
     <link>/plugins/servlet/mermaidchartops</link>
   </web-item>
   <servlet name="Mermaid Chart Ops" i18n-name-key="mermaid-chart-ops.name" key="mermaid-chart-ops" class="com.plugin.mermaidchart.servlet.MermaidChartOps">
     <description key="mermaid-chart-ops.description">The Mermaid Chart Ops Plugin</description>
     <url-pattern>/mermaidchartops</url-pattern>
   </servlet>
+
+  <rest name="Mermaid Chart Jira Rest" key="rest" path="/mermaid-chart" version="1.0">
+        <description>Provides REST resources for the mermaid chart.</description>
+    </rest>
+
+  <servlet name="Mermaid Chart Resources Listing" i18n-name-key="mermaid-chart-listings.name" key="mermaid-chart-resources-listing" class="com.plugin.mermaidchart.servlet.ResourcesListing">
+    <description key="mermaid-chart-listings.description">The Mermaid Chart Diagrams and Projects listing</description>
+    <url-pattern>/resourceslisting</url-pattern>
+  </servlet>
+
+  <servlet name="Mermaid Chart Diagrams Preview" i18n-name-key="mermaid-chart-diagrams.name" key="mermaid-chart-diagrams-preview" class="com.plugin.mermaidchart.servlet.DiagramPreview">
+    <description key="mermaid-chart-diagrams.description">The Mermaid Chart Diagram Preview</description>
+    <url-pattern>/diagrampreview</url-pattern>
+  </servlet>
+
+
 </atlassian-plugin>

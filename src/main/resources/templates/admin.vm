@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>$i18n.getText("mermaid-chart-ops.admin-page-title")</title>
+        <meta name="decorator" content="atl.popup"/>
+        $webResourceManager.requireResource("com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-plugin-resources")
+    </head>
+    <body>
+
+    <div class="main">
+            
+            <div id="page-content-wrapper-admin">
+                <h1>$i18n.getText("mermaid-chart-ops.admin-page-main-heading")</h1>
+                <form method='post' action='mermaidchartops' class="form">
+                    <div class="input-main">
+                        <label for="baseURL"><strong>$i18n.getText("mermaid-chart-ops.admin-field-title")</strong></label>
+                        <input type="text" class="input-field" placeholder="$i18n.getText("mermaid-chart-ops.admin-field-placeholder")" name="baseURL" value="$baseURL" required>
+                    </div>
+                    <button type="submit" class="submit-btn">$i18n.getText("mermaid-chart-ops.button-title")</button>
+                </form>
+            </div>
+        </div>
+        
+        
+    </body>
+</html>
