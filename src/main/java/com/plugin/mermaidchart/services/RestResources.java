@@ -24,7 +24,27 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
+
+import java.io.File;
+import java.io.OutputStream;
+import java.io.FileInputStream;
+import org.apache.commons.io.IOUtils;
+import java.io.FileNotFoundException;
+import java.net.HttpURLConnection;
+
+import java.io.FileOutputStream;
+import net.sourceforge.plantuml.SourceStringReader;
+ import java.io.InputStream;
+ import java.net.URL;
+ import java.net.URLConnection;
+ import java.io.ByteArrayOutputStream;
+ import org.apache.commons.codec.binary.Base64;
+
+ import java.lang.ProcessBuilder;
+ import java.lang.Process;
+ import java.lang.InterruptedException;
 
 import com.google.gson.Gson; 
 import com.google.gson.GsonBuilder; 
@@ -89,19 +109,18 @@ public class RestResources {
         return json;
     }
 
-    // @Path("/resources/image")
-    // @GET
-    // @Consumes(MediaType.APPLICATION_JSON)
-    // @Produces(MediaType.APPLICATION_JSON)
-    // public String getImage(@Context final HttpServletRequest req) throws ClientProtocolException, IOException{
-    //     String documentID = req.getParameter("documentID");
-    //     String projectID = req.getParameter("projectID");
-    //     String URL = "https://" + baseURL + "/rest-api/projects/" + projectID + "/documents/" + documentID;
-    //     HttpResponse response = restClient.getData(URL, securityToken);
-    //     String json = EntityUtils.toString(response.getEntity());
-    //     return json;
-    // }
-
+    @Path("/resources/diagramInfo")
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getDiagramData(@Context final HttpServletRequest req) throws ClientProtocolException, IOException{
+        logger.info("getDiagramData Called....");
+        String docId = req.getParameter("docId");
+        String URL = "https://" + baseURL + "/rest-api/documents/" + docId;
+        HttpResponse response = restClient.getData(URL, securityToken);
+        String json = EntityUtils.toString(response.getEntity());
+        return json;
+    }
 
     public void setParams(){
         baseURL = pluginSettingsFactory.createGlobalSettings().get(PLUGIN_STORAGE_KEY + ".baseURL");

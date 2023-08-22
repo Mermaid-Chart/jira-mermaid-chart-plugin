@@ -11,8 +11,8 @@
         <!-- Sidebar-->
       <div id="sidebar-wrapper">
         <div class="list-group">
-          <a class="list-group-item" href="/jira/plugins/servlet/mermaidchartops">Token Settings</a>
           <a class="list-group-item active" href="/jira/plugins/servlet/resourceslisting">Mermaid Chart</a>
+          <a class="list-group-item" href="/jira/plugins/servlet/mermaidchartops">Token Settings</a>
         </div>
     	</div>
 

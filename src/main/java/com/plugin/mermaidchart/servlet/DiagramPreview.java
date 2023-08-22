@@ -25,6 +25,9 @@ import com.plugin.mermaidchart.services.RestResources;
 @WebServlet("/diagrampreview")
 public class DiagramPreview extends HttpServlet{
 
+  @Autowired
+  private RestResources restResources;
+
     @ComponentImport
   private final TemplateRenderer templateRenderer;
 
@@ -40,7 +43,9 @@ public class DiagramPreview extends HttpServlet{
         context.put("documentID", request.getParameter("docId"));
         context.put("title", request.getParameter("title"));
         context.put("projectID", request.getParameter("proId"));
-        context.put("imgURL", "https://www.mermaidchart.com/raw/" + request.getParameter("docId") + "?version=v0.1&theme=light&format=png");
+        context.put("code", request.getParameter("code"));
+        context.put("rest", restResources);
+        context.put("imgURL", "https://www.mermaidchart.com/raw/"+request.getParameter("docId")+"?version=v0.1&theme=light&format=png");
 
     response.setContentType("text/html;charset=utf-8");
     templateRenderer.render("/templates/diagramPreview.vm", context, response.getWriter());

@@ -2,9 +2,11 @@ package com.plugin.mermaidchart.servlet;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Enumeration;
 import java.net.URI;
 
 import java.io.IOException;
+import java.lang.Exception;
 import java.io.PrintWriter;
 import javax.servlet.*;
 import javax.servlet.http.HttpServlet;
@@ -26,6 +28,8 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+
+import com.atlassian.oauth.client.example.PropertiesClient;
 
 @Scanned
 @WebServlet("/mermaidchartops")
@@ -60,13 +64,19 @@ public class MermaidChartOps extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
+        
     String username = userManager.getRemoteUsername(request);
     if(username == null){
       redirectToLogin(request, response);
       return;
     }
     String viewToRender;
+    String projectkey = request.getParameter("projectkey");
+    String issuekey = request.getParameter("issuekey");
+    System.out.println("Project key is " + projectkey);
+    System.out.println("issue key is " + issuekey);
     Map<String, Object> context;
+    
     if (!userManager.isSystemAdmin(username)) {
       context = userConfigurations();
       viewToRender = "/templates/user.vm";
@@ -74,6 +84,16 @@ public class MermaidChartOps extends HttpServlet {
       context = adminConfigurations();
       viewToRender = "/templates/admin.vm";
     }
+    PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
+    if (pluginSettings.get(PLUGIN_STORAGE_KEY + ".baseURL") == null) {
+      String URL = "www.mermaidchart.com";
+      pluginSettings.put(PLUGIN_STORAGE_KEY + ".baseURL", URL);
+      context.put("baseURL", pluginSettings.get(PLUGIN_STORAGE_KEY + ".baseURL"));
+    }
+    context.put("projectkey", projectkey);
+    context.put("issuekey", issuekey);
+    System.out.println(context.get("projectkey"));
+    System.out.println(context.get("issuekey"));
     response.setContentType("text/html;charset=utf-8");
     templateRenderer.render(viewToRender, context, response.getWriter());
   }
@@ -81,10 +101,6 @@ public class MermaidChartOps extends HttpServlet {
   public Map<String, Object> adminConfigurations() {
     Map<String, Object> context = new HashMap<String, Object>();
     PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
-    if (pluginSettings.get(PLUGIN_STORAGE_KEY + ".baseURL") == null) {
-      String URL = "www.mermaidchart.com";
-      pluginSettings.put(PLUGIN_STORAGE_KEY + ".baseURL", URL);
-    }
     context.put("baseURL", pluginSettings.get(PLUGIN_STORAGE_KEY + ".baseURL"));
     context.put("rest", restResources);
     return context;

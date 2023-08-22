@@ -11,10 +11,10 @@
             <!-- Sidebar-->
             <div id="sidebar-wrapper">
                 <div class="list-group">
-                    <a class="list-group-item active" href="/jira/plugins/servlet/mermaidchartops">Token Settings</a>
                     #if($securityToken != "")
                     <a class="list-group-item" href="/jira/plugins/servlet/resourceslisting">Mermaid Chart</a>
                     #end
+                    <a class="list-group-item active" href="/jira/plugins/servlet/mermaidchartops?projectkey='$projectkey'&issuekey='$issuekey'">Token Settings</a>
                 </div>
                 </div>
             <!-- main layout -->
@@ -28,6 +28,12 @@
                     <button type="submit" class="submit-btn">$i18n.getText("mermaid-chart-ops.button-title")</button>
                 </form>
             </div>
+            
         </div>
+        <h1>$projectkey</h1>
+            <h1>$issuekey</h1>
+            <script>
+             saveKeys('$projectkey', '$issuekey')
+            </script>
     </body>
 </html>

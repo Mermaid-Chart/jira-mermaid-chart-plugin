@@ -9,13 +9,8 @@
     <param name="plugin-logo">images/mermaid-icon-32.png</param>
   </plugin-info>
 
-
-  <!-- add our i18n resource -->
-  <!-- localization property file -->
-  <!-- This line of code represents mermaidchart-plugin.properties file -->
   <resource type="i18n" name="i18n" location="mermaidchart-plugin"/>
   
-  <!-- add our web resources -->
   <web-resource key="mermaidchart-plugin-resources" name="mermaidchart-plugin Web Resources">
     <dependency>com.atlassian.auiplugin:ajs</dependency>
     <resource type="download" name="mermaidchart-plugin.css" location="css/mermaidchart-plugin.css"/>
@@ -23,9 +18,13 @@
     <resource type="download" name="images/" location="/images"/>
     <context>mermaidchart-plugin</context>
   </web-resource>
-  <web-item key="mermaidchart-settings-link" name="Mermaid Chart Settings Link" section="system.top.navigation.bar" weight="1000">
+  <web-item key="mermaidchart-settings-link" name="Mermaid Chart Settings Link" section="operations-top-level" weight="0">
     <label key="Mermaid Chart Settings">Mermaid Chart</label>
-    <link>/plugins/servlet/mermaidchartops</link>
+    <link>/plugins/servlet/mermaidchartops?projectkey=${project.key}&amp;issuekey=${issue.key}</link>
+  </web-item>
+  <web-item key="mermaidchart-settings-preview" name="Mermaid Chart Settings preview" section="attachment-viewer-actions" weight="1000">
+    <label key="Mermaid Chart">Mermaid Chart</label>
+    <link>/plugins/servlet/mermaidchartops?projectkey=${project.key}&amp;issuekey=${issue.key}</link>
   </web-item>
   <servlet name="Mermaid Chart Ops" i18n-name-key="mermaid-chart-ops.name" key="mermaid-chart-ops" class="com.plugin.mermaidchart.servlet.MermaidChartOps">
     <description key="mermaid-chart-ops.description">The Mermaid Chart Ops Plugin</description>
