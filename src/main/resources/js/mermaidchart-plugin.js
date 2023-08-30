@@ -1,79 +1,96 @@
 
-function towardsListing(){
-    window.location.href = "/jira/plugins/servlet/resourceslisting"
-}
+// function towardsListing(){
+//     window.location.href = "/jira/plugins/servlet/resourceslisting"
+// }
 
-
-
-const clickList = (projectId, projectTitle) => {
-    const listContent = document.getElementById("list-content");
-    const listArrow = document.getElementById("arrow2");
-
-    if (listContent.style.display === "block") {
-        listContent.style.display = "none";
-        listArrow.innerHTML = "&#9658;";
-    } else {
-        listContent.style.display = "block";
-        listArrow.innerHTML = "&#9660;";
-        diagramResource(projectId, projectTitle);
-    }   
-}
-
-AJS.$(document).on('click', '.dropdown-content > li', function (event) {
-    event.preventDefault();
-    if (AJS.$('.dropdown-content > li').hasClass('selected')) {
-            AJS.$('.dropdown-content > li').removeClass('selected');
-            AJS.$(this).addClass("selected");
-        } else {
-            AJS.$(this).addClass("selected");
-        }
-  })
-
-  function showDiagram(){
-    let docId = AJS.$(".dropdown-content > li.selected").attr("id");
-    let diagramData = diagramsListed[docId];
-    window.location.href = "/jira/plugins/servlet/diagrampreview?docId=" + diagramData.documentID +
-     "&proId=" + diagramData.projectID + "&title=" + diagramData.title + "&code=" + encodeURIComponent(diagramData.code);
-  }
-
+// function to save projectkey and issue key in local storage
+// both of the keys are used to hold the reference used for redirection
 function saveKeys(projkey, isskey){
     localStorage.setItem("projectkey", projkey);
     localStorage.setItem("issuekey", isskey);
 }
 
+// function to redirect to issue page after successful saving of security token or baseURL.
+async function successfullySavingAction(){
+    let projectkey = localStorage.getItem("projectkey");
+    let issuekey = localStorage.getItem("issuekey");
+    document.getElementById("redirectionMessage").innerText = "Redirecting back to issue "+ issuekey + "...";
+    await new Promise(resolved => setTimeout(resolved, 3000));
+    window.location.href = "/jira/projects/" + projectkey + "/issues/" + issuekey;
+}
+
+// function called when click on list item on diagrams listing screen
+const listItemClickedAction = (projectId, projectTitle) => {
+    getDiagrams(projectId, projectTitle);       
+}
+
+// Click event listener on tree view list item's
+AJS.$(document).on('click', '.project-list-item', function (event) {
+    event.preventDefault();
+    this.parentElement.querySelector(".unordered-list-item").classList.toggle("activate");
+    this.classList.toggle("project-list-item-down");
+});
+
+// Click event listener to handle styling of tree view list item's
+AJS.$(document).on('click', '.tree-leaf-item > li', function (event) {
+    event.preventDefault();
+    if (AJS.$('.tree-leaf-item > li').hasClass('selected')) {
+        AJS.$('.tree-leaf-item > li').removeClass('selected');
+        AJS.$(this).addClass("selected");
+    } else {
+        AJS.$(this).addClass("selected");
+    }
+});
+
+// function to redirect towards diagrams preview screen
+function insertDiagramAction(userkey){
+    let docId = AJS.$(".tree-leaf-item > li.selected").attr("id");
+    let diagramData = diagramsListed[docId];
+    window.location.href = "/jira/plugins/servlet/diagrampreview?docId=" + diagramData.documentID +
+        "&proId=" + diagramData.projectID + "&title=" + diagramData.title + "&code=" + encodeURIComponent(diagramData.code) + "&userkey=" + userkey;
+}
+
 var diagramsToFilter = {};
 var diagramsListed = {};
 
-function diagramResource(projectId = "", projectTitle="", showDiagrams = false){
-    let e = document.getElementById("resourcesSelect");
+// function to get diagrams from mermaid chart
+function getDiagrams(projectId = "", projectTitle="", showDiagrams = false){
+    let element = document.getElementById("diagramSelect");
     let check;
-    !projectId ? (projectId = e.options[e.selectedIndex].value, check = true) : check = false
-    !projectTitle ? projectTitle = e.options[e.selectedIndex].innerText : ""
-    let uri = AJS.contextPath() + "/rest/mermaid-chart/1.0/resources/diagrams";
+    !projectId ? (projectId = element.options[element.selectedIndex].value, check = true) : check = false
+    !projectTitle ? projectTitle = element.options[element.selectedIndex].innerText : ""
     AJS.$.ajax({
-        url: uri,
+        url: AJS.contextPath() + "/rest/mermaid-chart/1.0/resources/diagrams",
         method: "GET",
-        data: {projectId: projectId},
+        data: { 
+            projectId: projectId
+        },
         dataType: "json",
         success: function(diagramsArray){
             let allDiagrams = AJS.$(diagramsArray);
             diagramsToFilter[projectTitle] = [];
-            diagramsToFilter[projectTitle] = allDiagrams.map((i, diagram) => { console.log(diagram); return ({projectID, title, documentID, code} = diagram )});  
-            !showDiagrams ?
-            (check ? (document.getElementById("pButton").style.display = "none", addListitems(allDiagrams)) : addListitems(allDiagrams))
+            diagramsToFilter[projectTitle] = allDiagrams.map((i, diagram) => { 
+                return ({projectID, title, documentID, code} = diagram )
+            });  
+            !showDiagrams 
+            ? (check 
+                ? (document.getElementById("tree-view").style.display = "none", 
+                    document.getElementById("list-content").style.display = "block", 
+                    addListitems(allDiagrams, true)) 
+                : addListitems(allDiagrams, false))
             : ""
         }
     });
 }
 
-// Place diagrams in the list 
-function addListitems(diagrams){
-    let ul = document.getElementById("list-content");
-    ul.innerHTML = "";
+// function to add diagrams list items on diagrams listing screen
+function addListitems(diagrams, isOptionSelected){
+    let ul = isOptionSelected ? document.getElementById("list-content") : document.getElementById(diagrams[0].projectID)
+    ul ? ul.innerHTML = "" : ""
     AJS.$.each(diagrams, function(index, diagram) {
         console.log(diagram.title);
         let li = document.createElement("li");
-        li.appendChild(document.createTextNode(diagram?.pTitle||diagram?.title||"Untitled Diagram"));
+        li.appendChild(document.createTextNode(diagram?.filteredTitle||diagram?.title||"Untitled Diagram"));
         li.setAttribute("id", diagram.documentID);
         ul.appendChild(li);
         let docId = diagram.documentID;
@@ -81,142 +98,93 @@ function addListitems(diagrams){
     });
 }
 
+// function to perform filtering on diagrams
 function filterDiagrams(){
-    let word = document.getElementById("filterText").value;
-    let d = JSON.stringify(diagramsToFilter);
+    let filterInput = document.getElementById("filterText").value;
     let result = [];
     for(key of Object.keys(diagramsToFilter)){
-        diagramsToFilter[key].filter(diagram => {
+        diagramsToFilter[key].filter((index, diagram) => {
             diagram.title = diagram.title||"Untitled Diagram";
-            (diagram.title).indexOf(word) != -1 ? result.push({pTitle: key + " : "+ diagram.title, title: diagram.title, documentID: diagram.documentID, projectID: diagram.projectID}) : ""
+            console.log(diagram);
+            (diagram.title).indexOf(filterInput) != -1 
+                ? result.push({filteredTitle: key + " : "+ diagram.title, title: diagram.title, documentID: diagram.documentID, projectID: diagram.projectID, code: diagram.code}) 
+                : ""
         });
     }   
-    word === "" ? (
-        result = [],
-         document.getElementById("pButton").style.display = "block", 
-         document.getElementById("arrow2").innerHTML = "&#9658;"
-         ) : document.getElementById("pButton").style.display = "none"
-    addListitems(result);
+    filterInput === "" 
+        ? ( result = [],
+            document.getElementById("tree-view").style.display = "block", 
+            document.getElementById("list-content").style.display = "none"
+            ) 
+        : document.getElementById("tree-view").style.display = "none",
+             document.getElementById("list-content").style.display = "block"
+    addListitems(result, true);
 }
 
-function editImage(projectID, documentID){
-    url = "https://www.mermaidchart.com/app/projects/" + projectID + "/diagrams/" + documentID + "/version/v0.1/edit"
+// function to redirect to mermaid chart edit image screen
+function editImage(domainName, projectID, documentID){
+    url = "https://" + domainName + "/app/projects/" + projectID + "/diagrams/" + documentID + "/version/v0.1/edit"
     window.open(url, '_blank').focus();
 }
 
-function syncImage(event, docId, diagramTitle){
-    let uri = AJS.contextPath() + "/rest/mermaid-chart/1.0/resources/diagramInfo";
+// function to sync image on diagram preview screen
+function syncImage(event, docId, diagramTitle, userkey){
     AJS.$.ajax({
-        url: uri,
+        url: AJS.contextPath() + "/rest/mermaid-chart/1.0/resources/diagramInfo",
         method: "GET",
-        data: {docId: docId},
+        data: {
+            docId: docId
+        },
         dataType: "json",
         success: function(diagramData){
             let diagram = AJS.$(diagramData);
             console.log(diagram);
-            console.log(diagram[0].code);
             window.location.href = "/jira/plugins/servlet/diagrampreview?docId=" + diagram[0].documentID +
-     "&proId=" + diagram[0].projectID + "&title=" + (diagram[0].title||"Untitled Diagram") + "&code=" + encodeURIComponent(diagram[0].code); 
+                "&proId=" + diagram[0].projectID + "&title=" + (diagram[0].title||"Untitled Diagram") + "&code=" 
+                + encodeURIComponent(diagram[0].code) + "&userkey=" + userkey; 
         }
     });
 }
 
-function test(filename){
-const svgElement = document.querySelector('[id^="mermaid-"]');
-const canvas = document.querySelector('canvas');
-const img = document.querySelector('img');
+// function to insert image as an attachment in jira issue screen and also redirect back towards issue screen
+function insertImageToJiraAction(filename){
+    const svgElement = document.querySelector('[id^="mermaid-"]');
+    const canvas = document.querySelector('canvas');
+    const img = document.getElementById('prerenderImage');
+    const svgXml = new XMLSerializer().serializeToString(svgElement);
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgXml)));
+    img.onload = async () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        canvas.getContext('2d').drawImage(img, 0, 0);   
+        const pngDataURL = canvas.toDataURL('image/png');
+        let file = DataURIToBlob(pngDataURL);
+        file = new File([file], filename+'.png');
+        const formData = new FormData();
+        formData.append('file', file);
+        document.getElementById("images").setAttribute("hidden", true);
 
+        let projectkey = localStorage.getItem("projectkey");
+        let issuekey = localStorage.getItem("issuekey");
 
-
-const svgXml = new XMLSerializer().serializeToString(svgElement);
- console.log('data:image/svg+xml;base64,' + btoa(svgXml));
- img.src = 'data:image/svg+xml;base64,' + btoa(svgXml);
-img.onload = async () => {
-    canvas.width = img.width;
-    canvas.height = img.height;
-
-canvas.getContext('2d').drawImage(img, 0, 0);   
-    const pngDataURL = canvas.toDataURL('image/png');
-    let file = DataURIToBlob(pngDataURL);
-    file = new File([file], filename+'.png');
-    const formData = new FormData();
-    formData.append('file', file);
-    document.getElementById("images").setAttribute("hidden", true);
-
-
-    let projectkey = localStorage.getItem("projectkey");
-    let issuekey = localStorage.getItem("issuekey");
-
-    AJS.$.ajax({
-        type: "POST",
-        url: AJS.contextPath() + "/rest/api/2/issue/" + issuekey + "/attachments",
-        data: formData,
-        cache: false,
-        contentType: false,
-        processData: false,
-        headers: {
-            "X-Atlassian-Token": "nocheck"
-        }
+        AJS.$.ajax({
+            type: "POST",
+            url: AJS.contextPath() + "/rest/api/2/issue/" + issuekey + "/attachments",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            headers: {
+                "X-Atlassian-Token": "nocheck"
+            }
         }).done(function() { 
-            let uri = AJS.contextPath() + "/rest/api/2/issue/" + issuekey;
-            let payload = {fields: 
-                {
-                    description:  "!" + filename + ".png|thumbnail!"
-                }
-            };
-            AJS.$.ajax({
-                url: uri,
-                type: "PUT",
-                data: JSON.stringify(payload),
-                headers: {
-                    "Authorization": "Basic " + btoa("test:test"),
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                dataType: "json",
-                success: function(){
-                    console.log("/jira/projects/" + projectkey + "/issues/" + issuekey);
                 window.location.href = "/jira/projects/" + projectkey + "/issues/" + issuekey;
-                }
-            });
         });
-}
-}
-
-
-
-
-
-function toObjectUrl(url) {
-    return fetch(url)
-        .then((response)=> {
-          return response.blob();
-        })
-        .then(blob=> {
-          return URL.createObjectURL(blob);
-        });
-  }
-
-
-
-
-
-
-
-//return a promise that resolves with a File instance
-function urltoFile(url, filename, mimeType){
-    mimeType = mimeType || (url.match(/^data:([^;]+);/)||'')[1];
-    return (fetch(url)
-        .then(function(res){return res.arrayBuffer();})
-        .then(function(buf){return new File([buf], filename, {type:mimeType});})
-    );
+    }
 }
 
-//Usage example:
-
-
+// function to convert dataURI to Blob Object
 function DataURIToBlob(dataURI) {
-    console.log(dataURI);
     const splitDataURI = dataURI.split(',')
     const byteString = splitDataURI[0].indexOf('base64') >= 0 ? atob(splitDataURI[1]) : decodeURI(splitDataURI[1])
     const mimeString = splitDataURI[0].split(':')[1].split(';')[0]
@@ -225,9 +193,7 @@ function DataURIToBlob(dataURI) {
     const ia = new Uint8Array(byteString.length)
     for (let i = 0; i < byteString.length; i++)
        ia[i] = byteString.charCodeAt(i)
-    console.log(mimeString);
     return new Blob([ia], {
        type: mimeString
     })
  }
-

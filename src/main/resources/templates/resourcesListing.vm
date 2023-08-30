@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>$i18n.getText("mermaid-chart-ops.listing-page-title")</title>
-    <meta name="decorator" content="atl.popup"/>
+    <meta name="decorator" content="atl.general"/>
     $webResourceManager.requireResource("com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-plugin-resources")
   </head>
   <body>
@@ -12,21 +12,20 @@
       <div id="sidebar-wrapper">
         <div class="list-group">
           <a class="list-group-item active" href="/jira/plugins/servlet/resourceslisting">Mermaid Chart</a>
-          <a class="list-group-item" href="/jira/plugins/servlet/mermaidchartops">Token Settings</a>
         </div>
     	</div>
 
         <!-- page content        -->
       <div class="dropdown-wrapper">
         <div class="drop-down">
-          $rest.setParams()
+          $rest.setParams($userkey)
           #set($projects = $rest.getProjects())
-					<select class="main-select" id="resourcesSelect" onchange="diagramResource()">
+					<select class="main-select" id="diagramSelect" onchange="getDiagrams()">
 						<option value="" disabled selected>Select Projects...</option>
             #foreach($project in $projects)
 							<option value="$project.getId()">$project.getTitle()</option>
               <script>
-                  diagramResource('$project.getId()', '$project.getTitle()', 'true')
+                  getDiagrams('$project.getId()', '$project.getTitle()', 'true')
               </script> 
 						#end
           </select>
@@ -34,23 +33,37 @@
           <div class="input-filter">
             <input type="text" class="filter" oninput="filterDiagrams()" id="filterText" placeholder="Filter...">      
           </div>
-            <!-- Scrollable list -->
+             
           <div class="list">
             <div class="list-drop-down">
-							#foreach($project in $projects)
-							  <button id="pButton" class="dropbtn" onclick="clickList('$project.getId()', '$project.getTitle()')"><span id="arrow2">&#9658;</span>$project.getTitle()</button>
-							#end	
               <!-- Dropdown content -->
-            <ul class="dropdown-content" id="list-content">
-							</ul>			
+            <ul class="tree-leaf-item" id="list-content">
+							</ul>		
+              
+              <div id="tree-view">
+              
+              #foreach($project in $projects)
+                <ul id="myUL" class="dropbtn">
+                  <li><span class="project-list-item" onclick="listItemClickedAction('$project.getId()', '$project.getTitle()')">$project.getTitle()</span>
+                    <ul class="unordered-list-item tree-leaf-item" id="$project.getId()">
+                    </ul>
+                  </li>
+                </ul>
+              #end
+              </div>
 						</div>
-                
           </div>
             <!-- insert btn -->
           <div class="insert-btn">
-            <button class="" onclick="showDiagram()">Insert</button>
+            <button class="" onclick="insertDiagramAction('$userkey')">Insert</button>
           </div>
       </div>
 	  </div>
+
+    #if($projectkey)
+      <script>
+        saveKeys('$projectkey', '$issuekey')
+      </script>
+    #end
   </body>
 </html>

@@ -2,25 +2,40 @@
 <html>
     <head>
         <title>$i18n.getText("mermaid-chart-ops.admin-page-title")</title>
-        <meta name="decorator" content="atl.popup"/>
+        <meta name="decorator" content="atl.general"/>
         $webResourceManager.requireResource("com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-plugin-resources")
     </head>
     <body>
 
-    <div class="main">
-            
+        <div class="main aui">
             <div id="page-content-wrapper-admin">
                 <h1>$i18n.getText("mermaid-chart-ops.admin-page-main-heading")</h1>
-                <form method='post' action='mermaidchartops' class="form">
+                <form method='post' action='mermaidchartops' class="form" style="height: 250px">
                     <div class="input-main">
                         <label for="baseURL"><strong>$i18n.getText("mermaid-chart-ops.admin-field-title")</strong></label>
                         <input type="text" class="input-field" placeholder="$i18n.getText("mermaid-chart-ops.admin-field-placeholder")" name="baseURL" value="$baseURL" required>
                     </div>
+                    <div class="input-main">
+                        <label for="securityToken"><strong>$i18n.getText("mermaid-chart-ops.user-field-title")</strong></label>
+                        <input type="text" class="input-field" placeholder="$i18n.getText("mermaid-chart-ops.user-field-placeholder")" name="securityToken" value="$securityToken" required />
+                    </div>
                     <button type="submit" class="submit-btn">$i18n.getText("mermaid-chart-ops.button-title")</button>
+                    #if($saved == "success")
+                        <p class="savedMsg">$i18n.getText("mermaid-chart-ops.admin-field-title") saved successfully.</p>
+                    #end
                 </form>
+                <p id="redirectionMessage"></p>
             </div>
         </div>
-        
-        
+
+        #if($saved == "success")
+            <script>
+                successfullySavingAction();
+            </script>
+        #else
+            <script>
+                saveKeys('$projectkey', '$issuekey')
+            </script>
+        #end        
     </body>
 </html>

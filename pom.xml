@@ -12,6 +12,7 @@
     <name>mermaidchart-plugin</name>
     <description>This plugin enables mermaid diagrams to be viewed and edited in Jira issues</description>
     <packaging>atlassian-plugin</packaging>
+    
     <dependencies>
         <dependency>
             <groupId>com.atlassian.templaterenderer</groupId>
@@ -24,14 +25,6 @@
             <artifactId>jira-api</artifactId>
             <version>${jira.version}</version>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.atlassian.oauth.v1</groupId>
-            <artifactId>OAuthTutorialClient</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/META-INF/libs/OAuthTutorialClient-1.0.jar</systemPath>
         </dependency>
 
         <dependency>
@@ -195,7 +188,7 @@
 							org.eclipse.gemini.blueprint.*;resolution:="optional",
                             com.sun.imageio.plugins.png;resolution:=optional,
                             org.apache.tools.ant.*;resolution:=optional,
-							com.sun.jna;resolution:=optional,
+                     		com.sun.jna;resolution:=optional,
 							com.sun.jna.platform.win32;resolution:=optional,
 							com.sun.jna.ptr;resolution:=optional,
 							com.sun.jna.win32;resolution:=optional,

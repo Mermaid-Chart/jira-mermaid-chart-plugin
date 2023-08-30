@@ -2,13 +2,13 @@
 <html>
     <head>
         <title>$i18n.getText("mermaid-chart-ops.user-page-title")</title>
-        <meta name="decorator" content="atl.popup"/>
+        <meta name="decorator" content="atl.general"/>
         $webResourceManager.requireResource("com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-plugin-resources")
     </head>
     <body>
 
     <div class="main">
-            <!-- Sidebar-->
+            <!-- Sidebar
             <div id="sidebar-wrapper">
                 <div class="list-group">
                     #if($securityToken != "")
@@ -16,9 +16,9 @@
                     #end
                     <a class="list-group-item active" href="/jira/plugins/servlet/mermaidchartops?projectkey='$projectkey'&issuekey='$issuekey'">Token Settings</a>
                 </div>
-                </div>
+                </div>-->
             <!-- main layout -->
-            <div id="page-content-wrapper">
+            <div id="page-content-wrapper-admin">
                 <h1>$i18n.getText("mermaid-chart-ops.user-page-main-heading")</h1>
                 <form method='post' action='mermaidchartops' class="form">
                     <div class="input-main">
@@ -26,14 +26,24 @@
                         <input type="text" class="input-field" placeholder="$i18n.getText("mermaid-chart-ops.user-field-placeholder")" name="securityToken" value="$securityToken" required />
                     </div>
                     <button type="submit" class="submit-btn">$i18n.getText("mermaid-chart-ops.button-title")</button>
+                    #if($saved == "success")
+                        <p class="savedMsg">$i18n.getText("mermaid-chart-ops.admin-field-title") saved successfully.</p>
+                    #end
                 </form>
+                <p id="redirectionMessage"></p>
             </div>
             
         </div>
-        <h1>$projectkey</h1>
-            <h1>$issuekey</h1>
+            
+
+            #if($saved == "success")
+            <script>
+            successfullySavingAction();
+            </script>
+            #else
             <script>
              saveKeys('$projectkey', '$issuekey')
             </script>
+        #end
     </body>
 </html>
