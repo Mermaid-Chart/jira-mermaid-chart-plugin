@@ -1,3 +1,349 @@
+var projectsList = [];
+var diagramsList = [];
+var projectsFiltered = [];
+var previewDiagramDataURL;
+var securityTokenValue = null;
+
+
+function getProjects(){
+    projectsList= [];
+    AJS.$.ajax({
+        url: AJS.contextPath() + "/rest/mermaid-chart/1.0/resources/projects",
+        method: "GET",
+        dataType: "json",
+        success: function(projectsArray){
+            projectsList = projectsArray;
+            getAllDiagrams(projectsList);
+            populateProjectsInView(projectsList);
+            console.log(projectsList);
+        }
+    });
+}
+
+function populateProjectsInView(allProjects){
+    console.log(allProjects);
+    let projectsSelector = document.getElementById('projects');
+    projectsSelector.innerHTML = "";
+    allProjects.unshift({title: "Select project", id: '', selected: true, disabled: true});
+    allProjects.forEach(project => {
+        let option = document.createElement('option');
+        option.setAttribute('value', project.id);
+        option.innerHTML = project.title;
+        option.selected = project.selected;
+        option.disabled = project.disabled;
+        projectsSelector.appendChild(option);
+    });
+}
+
+function getAllDiagrams(projects){
+    diagramsList= [];
+    projects.forEach(project => {
+        AJS.$.ajax({
+            url: AJS.contextPath() + "/rest/mermaid-chart/1.0/resources/diagrams",
+            method: "GET",
+            data: { 
+                projectId: project.id
+            },
+            dataType: "json",
+            success: function(diagramArray){
+                diagramsList[project.id] = diagramArray;
+                console.log(diagramArray);
+            }
+        })
+    });
+}
+
+function populateDiagramsInView(){
+    let projectsSelector = document.getElementById('projects');
+    let projectId = projectsSelector.options[projectsSelector.selectedIndex].value;
+    let diagramsOfSelectedProject = diagramsList[projectId];
+    let diagramsSection = document.getElementById("diagrams");
+    diagramsSection.innerHTML = '';
+    diagramsOfSelectedProject.forEach(diagram => {
+        let li = document.createElement("li");
+        li.setAttribute('class', 'py-2 px-2 hover:bg-gray-200 border border-b-1 border-gray-200');
+        li.id = diagram.id;
+        li.innerHTML = diagram.title||"Untitled Diagram";
+        diagramsSection.appendChild(li);
+    });
+}
+
+function searchProjects(){
+    projectsFiltered = [];
+    let textToFilter = document.getElementById('filterText').value; 
+    textToFilter 
+    ?   (projectsList.forEach(project => {
+            (project.title).indexOf(textToFilter) !== -1
+            ? projectsFiltered.push(project)
+            : ""
+        }))
+    : projectsFiltered = null;
+    projectsFiltered ? populateProjectsInView(projectsFiltered) : (projectsList.shift(), populateProjectsInView(projectsList)); 
+}
+
+function refreshDiagrams(){
+    let projectsSelector = document.getElementById('projects');
+    let projectId = projectsSelector.options[projectsSelector.selectedIndex].value;
+    let project = [{id: projectId}];
+    getAllDiagrams(project);
+}
+
+// Click event listener to handle styling of tree view list item's
+AJS.$(document).on('click', '.diagramsClass > li', function (event) {
+    event.preventDefault();
+    if (AJS.$('.diagramsClass > li').hasClass('selected')) {
+        AJS.$('.diagramsClass > li').removeClass('selected');
+        AJS.$(this).addClass("selected");
+    } else {
+        AJS.$(this).addClass("selected");
+    }
+});
+
+async function insertDiagramToPreviewPanel(baseURL){
+    let selectedDiagram = getSelectedDiagram();
+    console.log(selectedDiagram);
+    document.getElementById("diagramTitle").innerHTML = selectedDiagram.title||"Untitled Diagram";
+
+    // let payload = {pngCode: selectedDiagram.code,
+    // theme: "default",
+    // darkModeEnabled: false}
+    // AJS.$.ajax({
+    //     url: baseURL + "/raw/" + selectedDiagram.documentID + "?version=v0.1&theme=light&format=png",
+    //     type: "GET",
+    //     // data: payload,
+    //     dataType: "image/png",
+    //     success: function(res){
+    //         console.log("Success response is ", res);
+    //     },
+    //     error: function(res){
+    //         console.log("Error response is ", res);
+    //     }
+    // })
+
+    
+    
+    mermaid.initialize({ startOnLoad: true });
+    const { svg } = await mermaid.render('mermaid', selectedDiagram.code);
+    // const img = new Image();
+    let img = document.getElementById('previewImageSvg')
+    img.src = 'data:image/svg+xml;base64,' + btoa(svg);
+    img.onload = function () {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        context.drawImage(img, 0, 0);
+        previewDiagramDataURL = canvas.toDataURL('image/png');
+        // const imgElement = document.getElementById("previewImage");
+        // imgElement.src = previewDiagramDataURL;
+    };
+}
+
+function insertToJira(projectkey, issuekey){
+    if(!previewDiagramDataURL)
+        return;
+    let filename = AJS.$(".diagramsClass > li.selected").text();
+    console.log(filename); 
+    let file = DataURIToBlob(previewDiagramDataURL);
+    file = new File([file], filename+'.png');
+    const formData = new FormData();
+    formData.append('file', file);
+
+    AJS.$.ajax({
+        type: "POST",
+        url: AJS.contextPath() + "/rest/api/2/issue/" + issuekey + "/attachments",
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        headers: {
+            "X-Atlassian-Token": "nocheck"
+        }
+    }).done(async function(attachmentresponse) {
+        console.log(attachmentresponse); 
+        let attachmentId = attachmentresponse[0].id;
+        let diagram = await getSelectedDiagram(); 
+        let payload = {
+            data: JSON.stringify({
+                documentID: diagram.documentID, 
+                projectID: diagram.projectID, 
+                title: diagram.title||"Untitled Diagram", 
+                code: diagram.code
+            }), 
+            attachmentID: attachmentId
+        };
+        AJS.$.ajax({
+            type: "POST",
+            url: AJS.contextPath() + "/rest/mermaid-chart/1.0/resources/saveAttachmentConfigurations",
+            cache: false,
+            data: payload,
+            dataType: "json",
+            headers: { 
+                'Accept': 'application/json',
+                'Content-Type': "application/x-www-form-urlencoded; charset=UTF-8;" 
+            },
+            success: function(){},
+            error: function(response){
+                console.log("res ailed", response);
+            }
+        });
+        window.location.href = "/jira/projects/" + projectkey + "/issues/" + issuekey;
+    });
+}
+
+function getSelectedDiagram(){
+    let selectedDiagramId = AJS.$(".diagramsClass > li.selected").attr("id"); 
+    let projectsSelector = document.getElementById('projects');
+    let projectId = projectsSelector.options[projectsSelector.selectedIndex].value;
+    let diagramSelected = diagramsList[projectId].filter(diagramsListed => diagramsListed.id === selectedDiagramId);
+    return diagramSelected[0];    
+}
+
+// function to redirect to mermaid chart edit image screen
+function openInMC(domainName){
+    let selectedDiagram = getSelectedDiagram();
+    url = domainName + "/app/projects/" + selectedDiagram.projectID + "/diagrams/" + selectedDiagram.documentID + "/version/v0.1/edit"
+    window.open(url, '_blank').focus();
+}
+
+function saveSettings(userkey){
+    let baseURL = document.getElementById("baseURL").value||null;
+    let securityToken = document.getElementById("securityToken").value;
+    securityTokenValue = securityToken;
+
+    console.log(baseURL, userkey , securityToken);
+    let payload = {
+        // baseURL: baseURL,
+        securityToken: securityToken,
+        userKey: userkey
+    };
+    baseURL ? payload.baseURL = baseURL : ""
+
+    AJS.$.ajax({
+        type: "POST",
+        url: AJS.contextPath() + "/rest/mermaid-chart/1.0/resources/saveConfigurations",
+        cache: false,
+        data: payload,
+        dataType: "json",
+        headers: { 
+            'Accept': 'application/json',
+            'Content-Type': "application/x-www-form-urlencoded; charset=UTF-8;" 
+        },
+        success: function(){},
+        error: function(response){
+            document.getElementById("savedStatus").innerHTML = response.responseText;
+            console.log("res ailed", response);
+        }
+    });
+    getProjects();
+}
+
+
+function getAttachmentConfigurations(){
+    AJS.$.ajax({
+        url: AJS.contextPath() + "/rest/mermaid-chart/1.0/resources/getAttachmentConfigurations",
+        method: "GET",
+        data: { 
+            attachmentID: 10203
+        },
+        dataType: "json",
+        success: function(diagramsArray){
+            console.log(diagramsArray);
+        }
+    });
+}
+
+function backToJiraIssue(projectkey, issuekey){
+    window.location.href = "/jira/projects/" + projectkey + "/issues/" + issuekey;
+}
+
+function closeToast(){
+    document.getElementById("toast-warning").style.display = "none";
+}
+
+
+AJS.$(window).on("load", function(){
+
+    var beforeAboutSectionId;
+    const btnClick = function () {
+        let sectionToHideId = this.parentNode.getElementsByClassName("active")[0].id;
+        let sectionToHide = document.getElementById(sectionToHideId + "Section");
+        this.id === "about" ? beforeAboutSectionId = sectionToHideId : sectionToHide.style.display = "none";
+        this.parentNode.getElementsByClassName("active")[0].classList.remove("active");
+        this.classList.add("active");
+        let sectionToDisplayId = this.id;
+        sectionToDisplayId === "diagram" ? towardsSetting() : ""
+        let sectionToDisplay = document.getElementById(sectionToDisplayId + "Section");
+        sectionToDisplay.style.display = "block";
+    };
+    document.querySelectorAll(".btn-group .btn").forEach(btn => btn.addEventListener('click', btnClick));
+
+    document.getElementById("modalCloseBtn").onclick = function(){
+        document.getElementById("aboutSection").style.display = "none";
+        document.getElementById(beforeAboutSectionId).click();
+    }
+
+    async function towardsSetting(){
+        securityTokenValue = securityTokenValue||document.getElementById('validateSettings').value;
+        securityTokenValue == "$securityToken" ? securityTokenValue = "" : ""
+        console.log(securityTokenValue);
+        if(!securityTokenValue){
+            let toastMsg = document.getElementById('toast-warning');
+            toastMsg.style.display="flex";
+            await new Promise(r => setTimeout(r, 3000));
+            document.getElementById('settings').click();
+            toastMsg.style.display = "none";
+        }
+    }
+    towardsSetting();
+
+    function iconWithMCInIssue(){
+        
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // function towardsListing(){
 //     window.location.href = "/jira/plugins/servlet/resourceslisting"
@@ -50,7 +396,7 @@ function insertDiagramAction(userkey){
         "&proId=" + diagramData.projectID + "&title=" + diagramData.title + "&code=" + encodeURIComponent(diagramData.code) + "&userkey=" + userkey;
 }
 
-var diagramsToFilter = {};
+// var diagramsToFilter = {};
 var diagramsListed = {};
 
 // function to get diagrams from mermaid chart

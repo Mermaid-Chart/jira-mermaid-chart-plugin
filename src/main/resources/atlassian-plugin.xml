@@ -16,16 +16,17 @@
     <resource type="download" name="mermaidchart-plugin.css" location="css/mermaidchart-plugin.css"/>
     <resource type="download" name="mermaidchart-plugin.js" location="js/mermaidchart-plugin.js"/>
     <resource type="download" name="mermaid.min.js" location="js/mermaid.min.js"/>
+    <resource type="download" name="tailwind.js" location="js/tailwind.js"/>
     <resource type="download" name="images/" location="/images"/>
     <context>com.plugin.mermaidchart-plugin</context>
   </web-resource>
 
-  <web-item key="mermaidchart-settings-link" name="Mermaid Chart Settings Link" section="operations-top-level" weight="-1">
+  <web-item key="mermaidchart-settings-link" name="Mermaid Chart Settings Link" section="system.top.navigation.bar" weight="100">
     <label key="Mermaid Chart Settings">Mermaid Chart</label>
     <link>/plugins/servlet/mermaidchartops?projectkey=${project.key}&amp;issuekey=${issue.key}&amp;userkey=${user.key}</link>
   </web-item>
   <web-item key="mermaidchart-diagrams-link" name="Mermaid Chart Diagrams Link" section="operations-top-level" weight="0">
-    <label key="Mermaid Diagram Selector">Mermaid Chart</label>
+    <label key="Mermaid Chart">Mermaid Chart</label>
     <link>/plugins/servlet/resourceslisting?projectkey=${project.key}&amp;issuekey=${issue.key}&amp;userkey=${user.key}</link>
   </web-item>
 
@@ -50,3 +51,5 @@
 
 
 </atlassian-plugin>
+
+              <!-- <img id="previewImage" src="/jira/download/resources/com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-plugin-resources/images/mermaid-icon-32.png" /> -->
