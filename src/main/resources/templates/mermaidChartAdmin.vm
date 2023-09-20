@@ -43,7 +43,6 @@
         </div>
     	</div>
 
-
         <!-- Diagram section        -->
       <div id="diagramSection">
         <div class="flex flex-row mt-8">
@@ -66,10 +65,10 @@
           <div class="box-border w-6/12 p-4 h-auto m-8 flex flex-col items-center border border-black rounded">
             <label class="mt-4 font-sans text-base antialiased font-bold">Preview diagram</label>
 
-            <div class="w-11/12 h-72 p-4 mt-12">
+            <div class="w-11/12 h-80 p-4 mt-12">
               <label id="diagramTitle" class="text-blue-500"></label>
-              <div class=" flex items-center justify-center box-border border border-black rounded h-64 w-full p-2 mt-6">
-                <img id="previewImage" />
+              <div class=" flex items-center justify-center box-border border border-black rounded h-72 w-full p-2 mt-6">
+                <img class="max-w-full max-h-full" id="previewImage" />
                 <img class="max-w-full max-h-full" id="previewImageSvg" />
               </div>
             </div>

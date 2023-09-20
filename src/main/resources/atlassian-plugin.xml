@@ -18,13 +18,14 @@
     <resource type="download" name="mermaid.min.js" location="js/mermaid.min.js"/>
     <resource type="download" name="tailwind.js" location="js/tailwind.js"/>
     <resource type="download" name="images/" location="/images"/>
+    <context>atl.general</context>
     <context>com.plugin.mermaidchart-plugin</context>
   </web-resource>
 
-  <web-item key="mermaidchart-settings-link" name="Mermaid Chart Settings Link" section="system.top.navigation.bar" weight="100">
+  <!-- <web-item key="mermaidchart-settings-link" name="Mermaid Chart Settings Link" section="system.top.navigation.bar" weight="100">
     <label key="Mermaid Chart Settings">Mermaid Chart</label>
     <link>/plugins/servlet/mermaidchartops?projectkey=${project.key}&amp;issuekey=${issue.key}&amp;userkey=${user.key}</link>
-  </web-item>
+  </web-item> -->
   <web-item key="mermaidchart-diagrams-link" name="Mermaid Chart Diagrams Link" section="operations-top-level" weight="0">
     <label key="Mermaid Chart">Mermaid Chart</label>
     <link>/plugins/servlet/resourceslisting?projectkey=${project.key}&amp;issuekey=${issue.key}&amp;userkey=${user.key}</link>

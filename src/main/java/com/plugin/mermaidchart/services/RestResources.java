@@ -1,6 +1,8 @@
 package com.plugin.mermaidchart.services;
 
 import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+import javax.imageio.ImageIO;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 
@@ -57,17 +59,19 @@ public class RestResources {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public Response saveConigurations(@Context final HttpServletRequest request) throws ClientProtocolException, IOException {
-    String securityToken = request.getParameter("securityToken");
+    String securityTkn = request.getParameter("securityToken");
     String userKey = request.getParameter("userKey");  
-    System.out.println(securityToken);
+    System.out.println(securityTkn);
     System.out.println(userKey);
     String username = userManager.getRemoteUsername(request);
     if (userManager.isSystemAdmin(username)) {
-      String baseURL = request.getParameter("baseURL");
-      System.out.println(baseURL);
-      pluginSettingsFactory.createGlobalSettings().put(PLUGIN_STORAGE_KEY + ".baseURL", baseURL);
+      String baseUrl = request.getParameter("baseURL");
+      System.out.println(baseUrl);
+      pluginSettingsFactory.createGlobalSettings().put(PLUGIN_STORAGE_KEY + ".baseURL", baseUrl);
+      baseURL = baseUrl;
     }
-    pluginSettingsFactory.createSettingsForKey(userKey).put(PLUGIN_STORAGE_KEY + ".securityToken", securityToken);
+    pluginSettingsFactory.createSettingsForKey(userKey).put(PLUGIN_STORAGE_KEY + ".securityToken", securityTkn);
+    securityToken = securityTkn;
     return Response.ok("Settings saved successfully.").build();
   }
   
@@ -96,6 +100,18 @@ public class RestResources {
     String attachmentID = request.getParameter("attachmentID");
     System.out.println(attachmentID);
     return Response.ok(pluginSettingsFactory.createSettingsForKey(attachmentID).get("" + attachmentID)).build();
+  }
+
+  @Path("/resources/getPNG")
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getPNG(@Context final HttpServletRequest request) throws ClientProtocolException, IOException {
+    String documentId = request.getParameter("documentId");
+    System.out.println(documentId);
+    String URL = baseURL + "/raw/" + documentId + "?version=v0.1&theme=light&format=png";
+    HttpResponse pngResponse = restClient.getData(URL, securityToken);
+    String pngString = EntityUtils.toString(pngResponse.getEntity());
+    return Response.ok(pngString).build();
   }
 
 

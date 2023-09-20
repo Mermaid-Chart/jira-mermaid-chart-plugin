@@ -36,7 +36,7 @@ body {
 }
 
 .active {
-  background-color: #0947A6;
+  /* background-color: #0947A6; */
   color: white;
 }
 
@@ -338,7 +338,7 @@ ul, #myUL {
 }
 
 .btn.active {
-  background-color: rgb(30 58 138);
-  border-color: rgb(30 58 138);
+  background-color: #1e3a8a;
+  border-color: #1e3a8a;
   color: white;
 }

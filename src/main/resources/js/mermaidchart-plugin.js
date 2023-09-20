@@ -3,6 +3,8 @@ var diagramsList = [];
 var projectsFiltered = [];
 var previewDiagramDataURL;
 var securityTokenValue = null;
+var beforeAboutSectionId;
+
 
 
 function getProjects(){
@@ -103,6 +105,8 @@ async function insertDiagramToPreviewPanel(baseURL){
     let selectedDiagram = getSelectedDiagram();
     console.log(selectedDiagram);
     document.getElementById("diagramTitle").innerHTML = selectedDiagram.title||"Untitled Diagram";
+    setPNG(selectedDiagram);
+
 
     // let payload = {pngCode: selectedDiagram.code,
     // theme: "default",
@@ -122,21 +126,21 @@ async function insertDiagramToPreviewPanel(baseURL){
 
     
     
-    mermaid.initialize({ startOnLoad: true });
-    const { svg } = await mermaid.render('mermaid', selectedDiagram.code);
-    // const img = new Image();
-    let img = document.getElementById('previewImageSvg')
-    img.src = 'data:image/svg+xml;base64,' + btoa(svg);
-    img.onload = function () {
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        context.drawImage(img, 0, 0);
-        previewDiagramDataURL = canvas.toDataURL('image/png');
+    // mermaid.initialize({ startOnLoad: true });
+    // const { svg } = await mermaid.render('mermaid', selectedDiagram.code);
+    // // const img = new Image();
+    // let img = document.getElementById('previewImageSvg')
+    // img.src = 'data:image/svg+xml;base64,' + btoa(svg);
+    // img.onload = function () {
+    //     const canvas = document.createElement('canvas');
+    //     const context = canvas.getContext('2d');
+    //     canvas.width = img.width;
+    //     canvas.height = img.height;
+    //     context.drawImage(img, 0, 0);
+    //     previewDiagramDataURL = canvas.toDataURL('image/png');
         // const imgElement = document.getElementById("previewImage");
         // imgElement.src = previewDiagramDataURL;
-    };
+    // };
 }
 
 function insertToJira(projectkey, issuekey){
@@ -144,6 +148,7 @@ function insertToJira(projectkey, issuekey){
         return;
     let filename = AJS.$(".diagramsClass > li.selected").text();
     console.log(filename); 
+    console.log(previewDiagramDataURL);
     let file = DataURIToBlob(previewDiagramDataURL);
     file = new File([file], filename+'.png');
     const formData = new FormData();
@@ -159,10 +164,10 @@ function insertToJira(projectkey, issuekey){
         headers: {
             "X-Atlassian-Token": "nocheck"
         }
-    }).done(async function(attachmentresponse) {
+    }).done(function(attachmentresponse) {
         console.log(attachmentresponse); 
         let attachmentId = attachmentresponse[0].id;
-        let diagram = await getSelectedDiagram(); 
+        let diagram = getSelectedDiagram(); 
         let payload = {
             data: JSON.stringify({
                 documentID: diagram.documentID, 
@@ -239,18 +244,21 @@ function saveSettings(userkey){
 }
 
 
-function getAttachmentConfigurations(){
-    AJS.$.ajax({
+async function getAttachmentConfigurations(attId){
+    let diagram;
+    await AJS.$.ajax({
         url: AJS.contextPath() + "/rest/mermaid-chart/1.0/resources/getAttachmentConfigurations",
         method: "GET",
         data: { 
-            attachmentID: 10203
+            attachmentID: attId
         },
         dataType: "json",
         success: function(diagramsArray){
             console.log(diagramsArray);
+            diagram = diagramsArray
         }
     });
+    return diagram;
 }
 
 function backToJiraIssue(projectkey, issuekey){
@@ -261,10 +269,33 @@ function closeToast(){
     document.getElementById("toast-warning").style.display = "none";
 }
 
+AJS.$(document).on("click", "#modalCloseBtn", function(){
+    document.getElementById("aboutSection").style.display = "none";
+    document.getElementById(beforeAboutSectionId).click();
+});
+
+function setPNG(diagram){
+    AJS.$.ajax({
+        url: AJS.contextPath() + "/rest/mermaid-chart/1.0/resources/getPNG",
+        method: "GET",
+        data: { 
+            documentId: diagram.documentID
+        },
+        dataType: "json",
+        success: function(){},
+        error: function(res){
+            const base64Image = btoa(res.responseText);
+            // console.log(base64Image);
+            previewDiagramDataURL = "data:image/png;base64," + base64Image;
+            document.getElementById("previewImage").src = "data:image/png;base64," + base64Image;
+        }
+    })
+}
+
+
 
 AJS.$(window).on("load", function(){
 
-    var beforeAboutSectionId;
     const btnClick = function () {
         let sectionToHideId = this.parentNode.getElementsByClassName("active")[0].id;
         let sectionToHide = document.getElementById(sectionToHideId + "Section");
@@ -278,11 +309,6 @@ AJS.$(window).on("load", function(){
     };
     document.querySelectorAll(".btn-group .btn").forEach(btn => btn.addEventListener('click', btnClick));
 
-    document.getElementById("modalCloseBtn").onclick = function(){
-        document.getElementById("aboutSection").style.display = "none";
-        document.getElementById(beforeAboutSectionId).click();
-    }
-
     async function towardsSetting(){
         securityTokenValue = securityTokenValue||document.getElementById('validateSettings').value;
         securityTokenValue == "$securityToken" ? securityTokenValue = "" : ""
@@ -295,12 +321,55 @@ AJS.$(window).on("load", function(){
             toastMsg.style.display = "none";
         }
     }
-    towardsSetting();
+    document.getElementById('validateSettings') ? towardsSetting() : ''
 
-    function iconWithMCInIssue(){
-        
+    AJS.$(document).ready(function(){
+        let mcDiv = document.getElementById("com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-diagrams-link");
+        let img;
+        mcDiv
+        ?   (console.log("In...."),
+            mcDiv.parentElement.style.display = "flex",
+            mcDiv.firstChild.style.display = "flex",
+            img = new Image(),
+            img.setAttribute("style", "height: 16px; width: 16px; margin: 2px 5px 2px 0px;"),
+            img.src = "/jira/download/resources/com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-plugin-resources/images/mermaid-icon-16.png",
+            mcDiv.firstChild.prepend(img)    )
+        : ""
+    });
+
+    const attachmentActions = async function(){
+        let allAttachments = document.getElementsByClassName("attachment-delete");
+        for(attachment of allAttachments) {
+            attachment.style.width = "50px";
+            let id = attachment.firstChild.id.split("_")[1];
+            console.log(id);
+            let attachmentDetails = await getAttachmentConfigurations(id);
+            console.log(attachmentDetails);
+            attachment.appendChild(appendElements("edit", id))
+        }
     }
+
+    function appendElements(type, id){
+        let anchor = document.createElement('a');
+        anchor.title = type + " this attachment";
+        anchor.id = type + "_" + id;
+        anchor.style.paddingRight = "10px";
+        let span =  document.createElement('span');
+        span.setAttribute('class', 'icon-default aui-icon aui-icon-small aui-iconfont-' + type);
+        anchor.prepend(span);
+        return anchor;
+
+    }
+
+        let attachmentThumbnail = document.getElementById('attachment_thumbnails')
+        attachmentThumbnail ? attachmentActions() : ""
+
+
 });
+
+/* <div class="attachment-delete"><a title="Delete this attachment" id="del_10101" 
+href="/jira/secure/DeleteAttachment!default.jspa?id=10000&amp;deleteAttachmentId=10101&amp;from=issue">
+    <span class="icon-default aui-icon aui-icon-small aui-iconfont-delete">Delete this attachment</span></a></div> */
 
 
 
