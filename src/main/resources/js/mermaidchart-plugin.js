@@ -4,8 +4,14 @@ var projectsFiltered = [];
 var previewDiagramDataURL;
 var securityTokenValue = null;
 var beforeAboutSectionId;
+var mermaidAttachments = {};
+var diagramToSync;
+var issueKeyToSync;
 
 
+function saveBaseURL(basrUrl){
+    localStorage.setItem("BaseURL", basrUrl);
+}
 
 function getProjects(){
     projectsList= [];
@@ -143,16 +149,18 @@ async function insertDiagramToPreviewPanel(baseURL){
     // };
 }
 
-function insertToJira(projectkey, issuekey){
+function insertToJira(projectkey = "", issuekey = "", redirect = true, diagramToConfigure = null){
     if(!previewDiagramDataURL)
         return;
-    let filename = AJS.$(".diagramsClass > li.selected").text();
+    let filename = diagramToConfigure?.title||AJS.$(".diagramsClass > li.selected").text();
     console.log(filename); 
     console.log(previewDiagramDataURL);
     let file = DataURIToBlob(previewDiagramDataURL);
     file = new File([file], filename+'.png');
     const formData = new FormData();
     formData.append('file', file);
+
+    issuekey = issuekey||issueKeyToSync;
 
     AJS.$.ajax({
         type: "POST",
@@ -167,13 +175,14 @@ function insertToJira(projectkey, issuekey){
     }).done(function(attachmentresponse) {
         console.log(attachmentresponse); 
         let attachmentId = attachmentresponse[0].id;
-        let diagram = getSelectedDiagram(); 
+        let diagram = diagramToConfigure||getSelectedDiagram(); 
         let payload = {
             data: JSON.stringify({
                 documentID: diagram.documentID, 
                 projectID: diagram.projectID, 
                 title: diagram.title||"Untitled Diagram", 
-                code: diagram.code
+                code: diagram.code,
+                baseURL: localStorage.getItem("BaseURL")
             }), 
             attachmentID: attachmentId
         };
@@ -192,7 +201,7 @@ function insertToJira(projectkey, issuekey){
                 console.log("res ailed", response);
             }
         });
-        window.location.href = "/jira/projects/" + projectkey + "/issues/" + issuekey;
+        redirect ? window.location.href = "/jira/projects/" + projectkey + "/issues/" + issuekey : ""
     });
 }
 
@@ -274,7 +283,7 @@ AJS.$(document).on("click", "#modalCloseBtn", function(){
     document.getElementById(beforeAboutSectionId).click();
 });
 
-function setPNG(diagram){
+function setPNG(diagram, showPreview = true){
     AJS.$.ajax({
         url: AJS.contextPath() + "/rest/mermaid-chart/1.0/resources/getPNG",
         method: "GET",
@@ -285,11 +294,24 @@ function setPNG(diagram){
         success: function(){},
         error: function(res){
             const base64Image = btoa(res.responseText);
-            // console.log(base64Image);
+            console.log(base64Image);
             previewDiagramDataURL = "data:image/png;base64," + base64Image;
-            document.getElementById("previewImage").src = "data:image/png;base64," + base64Image;
+            showPreview ? document.getElementById("previewImage").src = "data:image/png;base64," + base64Image : insertToJira("", "", false, diagram);
         }
     })
+}
+
+function deleteAttachment(attachmentId){
+    AJS.$.ajax({
+        type: "DELETE",
+        url: AJS.contextPath() + "/rest/api/2/attachment/" + attachmentId,
+        headers: {
+            "X-Atlassian-Token": "nocheck"
+        },
+        success: function(res){
+            console.log(res);
+        }
+    });
 }
 
 
@@ -340,23 +362,33 @@ AJS.$(window).on("load", function(){
     const attachmentActions = async function(){
         let allAttachments = document.getElementsByClassName("attachment-delete");
         for(attachment of allAttachments) {
-            attachment.style.width = "50px";
             let id = attachment.firstChild.id.split("_")[1];
             console.log(id);
             let attachmentDetails = await getAttachmentConfigurations(id);
-            console.log(attachmentDetails);
-            attachment.appendChild(appendElements("edit", id))
+            attachmentDetails
+            ?   (attachment.style.width = "60px",
+                mermaidAttachments[id] = attachmentDetails,
+                attachment.appendChild(appendElements("edit", id, 1, attachmentDetails)),
+                attachment.appendChild(appendElements("refresh", id, 2.3, attachmentDetails)))
+            : ""
         }
     }
 
-    function appendElements(type, id){
+    function appendElements(type, id, margin, attachment){
         let anchor = document.createElement('a');
-        anchor.title = type + " this attachment";
+        anchor.title = (type.charAt(0).toUpperCase() + type.slice(1)) + " this attachment in mermaid chart";
         anchor.id = type + "_" + id;
-        anchor.style.paddingRight = "10px";
+        anchor.style.marginLeft = margin + "rem";
+        anchor.style.cursor = "pointer";
+        type === "edit" 
+        ? (anchor.href = attachment.baseURL + "/app/projects/" + attachment.projectID + "/diagrams/" + attachment.documentID + "/version/v0.1/edit",
+            anchor.target = "_blank",
+            anchor.rel="noopener noreferrer"
+            )
+        : ""
         let span =  document.createElement('span');
         span.setAttribute('class', 'icon-default aui-icon aui-icon-small aui-iconfont-' + type);
-        anchor.prepend(span);
+        anchor.appendChild(span);
         return anchor;
 
     }
@@ -367,9 +399,53 @@ AJS.$(window).on("load", function(){
 
 });
 
-/* <div class="attachment-delete"><a title="Delete this attachment" id="del_10101" 
-href="/jira/secure/DeleteAttachment!default.jspa?id=10000&amp;deleteAttachmentId=10101&amp;from=issue">
-    <span class="icon-default aui-icon aui-icon-small aui-iconfont-delete">Delete this attachment</span></a></div> */
+    AJS.$(document).on('click', '[id^="edit_"]', function(event){
+    event.preventDefault();
+        if (event.ctrlKey) {
+            return;
+        }
+        const ctrlClickEvent = new MouseEvent('click', {
+            bubbles: true,
+            ctrlKey: true,
+        });
+
+        this.dispatchEvent(ctrlClickEvent);
+    });
+
+    
+    JIRA.bind(JIRA.Events.ISSUE_REFRESHED, function() {
+        issueKeyToSync = AJS.$("#key-val").text();
+        console.log("Issue Key: " + issueKeyToSync);
+    });
+
+
+    AJS.$(document).on('click', '[id^="refresh_"]', async function(event){
+        event.stopImmediatePropagation();
+
+        console.log(AJS);
+
+        // JIRA.bind(JIRA.Events.ISSUE_REFRESHED, function() {
+        //     var key = AJS.$("#key-val").text();
+        //     console.log("Issue Key: " + key);
+        // });
+
+        let id = this.id.split('_')[1];
+        console.log(id);
+        diagramToSync = mermaidAttachments[id];
+        deleteAttachment(id);
+        console.log(diagramToSync);
+        // insertToJira({redirect: false, diagramToConfigure: diagramToSync});
+        setPNG(diagramToSync, false);
+        setTimeout(() => {location.reload()}, 10000);
+        
+    });
+
+
+
+
+
+
+
 
 
 

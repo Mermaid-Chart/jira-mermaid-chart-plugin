@@ -135,5 +135,9 @@
       </div>
     </div>
 
+    #if($baseURL)
+      <script> saveBaseURL($baseURL) </script>
+    #end
+
   </body>
 </html>
