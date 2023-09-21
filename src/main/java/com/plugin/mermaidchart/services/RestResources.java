@@ -58,7 +58,7 @@ public class RestResources {
   @Path("/resources/saveConfigurations")
   @POST
   @Produces(MediaType.APPLICATION_JSON)
-  public Response saveConigurations(@Context final HttpServletRequest request) throws ClientProtocolException, IOException {
+  public String saveConigurations(@Context final HttpServletRequest request) throws ClientProtocolException, IOException {
     String securityTkn = request.getParameter("securityToken");
     String userKey = request.getParameter("userKey");  
     System.out.println(securityTkn);
@@ -72,24 +72,20 @@ public class RestResources {
     }
     pluginSettingsFactory.createSettingsForKey(userKey).put(PLUGIN_STORAGE_KEY + ".securityToken", securityTkn);
     securityToken = securityTkn;
-    return Response.ok("Settings saved successfully.").build();
+    return "Settings saved successfully.";
   }
   
 
   @Path("/resources/saveAttachmentConfigurations")
   @POST
   @Produces(MediaType.APPLICATION_JSON)
-  public Response saveAttachmentConigurations(@Context final HttpServletRequest request) throws ClientProtocolException, IOException {
-    // String documentID = request.getParameter('documentID');
-    // String projectID = request.getParameter('projectID');
-    // String title = request.getParameter('title');
-    // String code = request.getParameter('code');
+  public String saveAttachmentConigurations(@Context final HttpServletRequest request) throws ClientProtocolException, IOException {
     String data = request.getParameter("data");
     String attachmentID = request.getParameter("attachmentID");
     System.out.println(data);
     System.out.println(attachmentID);
     pluginSettingsFactory.createSettingsForKey(attachmentID).put("" + attachmentID, data);
-    return Response.ok("Diagram configuration saved successfully.").build();
+    return "Diagram configuration saved successfully.";
   }
 
 
@@ -105,20 +101,23 @@ public class RestResources {
   @Path("/resources/getPNG")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getPNG(@Context final HttpServletRequest request) throws ClientProtocolException, IOException {
+  public String getPNG(@Context final HttpServletRequest request) throws ClientProtocolException, IOException {
     String documentId = request.getParameter("documentId");
     System.out.println(documentId);
     String URL = baseURL + "/raw/" + documentId + "?version=v0.1&theme=light&format=png";
     HttpResponse pngResponse = restClient.getData(URL, securityToken);
     String pngString = EntityUtils.toString(pngResponse.getEntity());
-    return Response.ok(pngString).build();
+    return pngString;
   }
 
 
   @Path("/resources/projects")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public String getProjects() throws ClientProtocolException, IOException {
+  public String getProjects(@Context final HttpServletRequest request) throws ClientProtocolException, IOException {
+    String userkey = request.getParameter("userkey");
+    System.out.println("User key is " + userkey);
+    setParams(userkey);
     if(securityToken.equals("")){
       return "Invalid Security token";
     }

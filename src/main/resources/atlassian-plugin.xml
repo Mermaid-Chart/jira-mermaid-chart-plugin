@@ -22,35 +22,18 @@
     <context>com.plugin.mermaidchart-plugin</context>
   </web-resource>
 
-  <!-- <web-item key="mermaidchart-settings-link" name="Mermaid Chart Settings Link" section="system.top.navigation.bar" weight="100">
-    <label key="Mermaid Chart Settings">Mermaid Chart</label>
-    <link>/plugins/servlet/mermaidchartops?projectkey=${project.key}&amp;issuekey=${issue.key}&amp;userkey=${user.key}</link>
-  </web-item> -->
   <web-item key="mermaidchart-diagrams-link" name="Mermaid Chart Diagrams Link" section="operations-top-level" weight="0">
     <label key="Mermaid Chart">Mermaid Chart</label>
     <link>/plugins/servlet/resourceslisting?projectkey=${project.key}&amp;issuekey=${issue.key}&amp;userkey=${user.key}</link>
   </web-item>
-
-  <servlet name="Mermaid Chart Ops" i18n-name-key="mermaid-chart-ops.name" key="mermaid-chart-ops" class="com.plugin.mermaidchart.servlet.MermaidChartOps">
-    <description key="mermaid-chart-ops.description">The Mermaid Chart Ops Plugin</description>
-    <url-pattern>/mermaidchartops</url-pattern>
-  </servlet>
-
-  <rest name="Mermaid Chart Jira Rest" key="rest" path="/mermaid-chart" version="1.0">
-    <description>Provides REST resources for the mermaid chart.</description>
-  </rest>
 
   <servlet name="Mermaid Chart Resources Listing" i18n-name-key="mermaid-chart-listings.name" key="mermaid-chart-resources-listing" class="com.plugin.mermaidchart.servlet.ResourcesListing">
     <description key="mermaid-chart-listings.description">The Mermaid Chart Diagrams and Projects listing</description>
     <url-pattern>/resourceslisting</url-pattern>
   </servlet>
 
-  <servlet name="Mermaid Chart Diagrams Preview" i18n-name-key="mermaid-chart-diagrams.name" key="mermaid-chart-diagrams-preview" class="com.plugin.mermaidchart.servlet.DiagramPreview">
-    <description key="mermaid-chart-diagrams.description">The Mermaid Chart Diagram Preview</description>
-    <url-pattern>/diagrampreview</url-pattern>
-  </servlet>
-
+  <rest name="Mermaid Chart Jira Rest" key="rest" path="/mermaid-chart" version="1.0">
+    <description>Provides REST resources for the mermaid chart.</description>
+  </rest>
 
 </atlassian-plugin>
-
-              <!-- <img id="previewImage" src="/jira/download/resources/com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-plugin-resources/images/mermaid-icon-32.png" /> -->
