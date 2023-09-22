@@ -58,7 +58,6 @@ AJS.$(window).on("load", function(){
         : ""
     });
 
-
     // function to add actions with mermaid attachments
     const attachmentActions = async function(){
         let allAttachments = document.getElementsByClassName("attachment-delete");
@@ -130,7 +129,7 @@ function populateProjectsInView(allProjects){
 
 // function to get diagrams against projects list
 function getAllDiagrams(projects, willPopulate = false){
-    diagramsList= [];
+    // diagramsList= [];
     let diagramsSection = document.getElementById("diagrams");
     diagramsSection.innerHTML = '';
     projects.forEach(project => {
@@ -193,6 +192,8 @@ function searchProjects(){
 
 // function to refresh diagrams
 function refreshDiagrams(){
+    document.getElementById('previewImage').src = "";
+    document.getElementById('diagramTitle').innerHTML = "";
     let projectsSelector = document.getElementById('projects');
     let projectId = projectsSelector.options[projectsSelector.selectedIndex].value;
     let project = [{id: projectId}];
@@ -216,7 +217,6 @@ function insertDiagramToPreviewPanel(){
     document.getElementById("previewImage").src = "";
     previewLoader.style.display = "block";
     let selectedDiagram = getSelectedDiagram();
-    console.log(selectedDiagram);
     document.getElementById("diagramTitle").innerHTML = selectedDiagram.title||"Untitled Diagram";
     setPNG(selectedDiagram);
 }
@@ -245,6 +245,7 @@ function insertToJira(projectkey = "", issuekey = "", baseURL = "", redirect = t
     }).done(function(attachmentresponse) {
         let attachmentId = attachmentresponse[0].id;
         let diagram = diagramToConfigure||getSelectedDiagram(); 
+        console.log(diagram);
         let payload = {
             data: JSON.stringify({
                 documentID: diagram.documentID, 
@@ -268,9 +269,24 @@ function insertToJira(projectkey = "", issuekey = "", baseURL = "", redirect = t
             success: function(){},
             error: function(){}
         });
-        redirect ? window.location.href = "/jira/projects/" + projectkey + "/issues/" + issuekey : ""
+        redirect ? window.location.href = "/jira/projects/" + projectkey + "/issues/" + issuekey : location.reload();
     });
 }
+
+// function to convert dataURI to Blob Object
+function DataURIToBlob(dataURI) {
+    const splitDataURI = dataURI.split(',')
+    const byteString = splitDataURI[0].indexOf('base64') >= 0 ? atob(splitDataURI[1]) : decodeURI(splitDataURI[1])
+    const mimeString = splitDataURI[0].split(':')[1].split(';')[0]
+
+    var ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(byteString.length)
+    for (let i = 0; i < byteString.length; i++)
+       ia[i] = byteString.charCodeAt(i)
+    return new Blob([ia], {
+       type: mimeString
+    })
+ }
 
 // function to get selected diagram
 function getSelectedDiagram(){
@@ -402,5 +418,4 @@ AJS.$(document).on('click', '[id^="refresh_"]', async function(event){
     diagramToSync = mermaidAttachments[id];
     deleteAttachment(id);
     setPNG(diagramToSync, false);
-    setTimeout(() => {location.reload()}, 10000);        
 });

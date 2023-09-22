@@ -13,7 +13,7 @@ body {
 .main {
   display: grid;
   grid-template-columns: 19% 81%;
-  height: 80vh;
+  height: 90vh;
 }
 
 #sidebar-wrapper {
@@ -341,4 +341,8 @@ ul, #myUL {
   background-color: #1e3a8a;
   border-color: #1e3a8a;
   color: white;
+}
+
+.cp-image-container{
+  width: auto !important;
 }

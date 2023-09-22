@@ -24,12 +24,12 @@
 
   <web-item key="mermaidchart-diagrams-link" name="Mermaid Chart Diagrams Link" section="operations-top-level" weight="0">
     <label key="Mermaid Chart">Mermaid Chart</label>
-    <link>/plugins/servlet/resourceslisting?projectkey=${project.key}&amp;issuekey=${issue.key}&amp;userkey=${user.key}</link>
+    <link>/plugins/servlet/mermaidchart?projectkey=${project.key}&amp;issuekey=${issue.key}&amp;userkey=${user.key}</link>
   </web-item>
 
   <servlet name="Mermaid Chart Resources Listing" i18n-name-key="mermaid-chart-listings.name" key="mermaid-chart-resources-listing" class="com.plugin.mermaidchart.servlet.ResourcesListing">
     <description key="mermaid-chart-listings.description">The Mermaid Chart Diagrams and Projects listing</description>
-    <url-pattern>/resourceslisting</url-pattern>
+    <url-pattern>/mermaidchart</url-pattern>
   </servlet>
 
   <rest name="Mermaid Chart Jira Rest" key="rest" path="/mermaid-chart" version="1.0">
