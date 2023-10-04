@@ -106,7 +106,7 @@ function getProjects(userKey){
         dataType: "json",
         success: function(projectsArray){
             projectsList = projectsArray;
-            getAllDiagrams(projectsList, false);
+            getAllDiagrams(projectsList);
             populateProjectsInView(projectsList);
         }
     });
@@ -116,7 +116,7 @@ function getProjects(userKey){
 function populateProjectsInView(allProjects){
     let projectsSelector = document.getElementById('projects');
     projectsSelector.innerHTML = "";
-    allProjects.unshift({title: "Select project", id: '', selected: true, disabled: true});
+    allProjects.unshift({title: "Select", id: '', selected: true, disabled: true});
     allProjects.forEach(project => {
         let option = document.createElement('option');
         option.setAttribute('value', project.id);
@@ -130,8 +130,8 @@ function populateProjectsInView(allProjects){
 // function to get diagrams against projects list
 function getAllDiagrams(projects, willPopulate = false){
     // diagramsList= [];
-    let diagramsSection = document.getElementById("diagrams");
-    diagramsSection.innerHTML = '';
+    // let diagramsSection = document.getElementById("diagrams");
+    // diagramsSection.innerHTML = '';
     projects.forEach(project => {
         AJS.$.ajax({
             url: AJS.contextPath() + "/rest/mermaid-chart/1.0/resources/diagrams",
@@ -193,10 +193,13 @@ function searchProjects(){
 // function to refresh diagrams
 function refreshDiagrams(){
     document.getElementById('previewImage').src = "";
-    document.getElementById('diagramTitle').innerHTML = "";
+    document.getElementById('diagramTitle').value = "";
     let projectsSelector = document.getElementById('projects');
     let projectId = projectsSelector.options[projectsSelector.selectedIndex].value;
     let project = [{id: projectId}];
+    document.getElementById("diagramPlaceholder").style.display = "block";
+    let diagramsSection = document.getElementById("diagrams");
+    diagramsSection.innerHTML = '';
     getAllDiagrams(project, true);
 }
 
@@ -215,9 +218,10 @@ AJS.$(document).on('click', '.diagramsClass > li', function (event) {
 // function to insert diagram to preview panel when selected
 function insertDiagramToPreviewPanel(){
     document.getElementById("previewImage").src = "";
+    document.getElementById("diagramPlaceholder").style.display = "none";
     previewLoader.style.display = "block";
     let selectedDiagram = getSelectedDiagram();
-    document.getElementById("diagramTitle").innerHTML = selectedDiagram.title||"Untitled Diagram";
+    document.getElementById("diagramTitle").value = selectedDiagram.title||"Untitled Diagram";
     setPNG(selectedDiagram);
 }
 
@@ -328,6 +332,7 @@ function saveSettings(userkey){
         success: function(){},
         error: function(response){
             document.getElementById("savedStatus").innerHTML = response.responseText;
+            document.getElementById("settingsToDiagrams").innerHTML = "Go to the <button onclick= \"goToDiagrams()\"class=\"text-blue-700 underline\">Diagrams</button> page to see your diagrams.";
             getProjects(userkey);
         }
     });
@@ -348,6 +353,12 @@ async function getAttachmentConfigurations(attId){
         }
     });
     return diagram;
+}
+
+function goToDiagrams(){
+    document.getElementById("savedStatus").innerHTML = "";
+    document.getElementById("settingsToDiagrams").innerHTML = "";
+    document.getElementById('diagram').click();
 }
 
 // function to redirect towards jira issue

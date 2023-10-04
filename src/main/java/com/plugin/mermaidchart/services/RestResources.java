@@ -72,7 +72,7 @@ public class RestResources {
     }
     pluginSettingsFactory.createSettingsForKey(userKey).put(PLUGIN_STORAGE_KEY + ".securityToken", securityTkn);
     securityToken = securityTkn;
-    return "Settings saved successfully.";
+    return "Settings successfully saved!";
   }
   
 

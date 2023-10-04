@@ -27,15 +27,16 @@
 
     <div class="main">
         <!-- Sidebar-->
-      <div id="sidebar-wrapper">
+      <div id="sidebar-wrapper" class="border-r border-gray-300">
         <div>
           <div class="btn-group flex flex-col items-center w-full h-auto p-2" role="group">
-            <img class="pt-12 w-auto h-auto" src="/jira/download/resources/com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-plugin-resources/images/mermaid-icon-32.png" />
-            <button id="diagram" class="btn active bg-transparent w-10/12 h-auto p-4 mt-12 hover:bg-blue-900 text-blue-900 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">Diagrams</button>
-            <button id="settings" class="btn bg-transparent w-10/12 h-auto p-4 mt-4 hover:bg-blue-900 text-blue-900 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">Settings</button>
-            <span class="w-full mt-80"><hr class="w-full bg-white-400"></span>
-            <button id="about" class="btn bg-transparent w-10/12 h-auto p-4 mt-4 hover:bg-blue-900 text-blue-900 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">About</button>
-            <button id="backToIssue" class="bg-transparent w-10/12 h-auto p-4 mt-4 hover:bg-blue-900 text-blue-900 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded" onclick="backToJiraIssue('$projectkey', '$issuekey')">Back to $issuekey</button>      
+            <img class="py-24 w-36 h-auto" src="/jira/download/resources/com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-plugin-resources/images/logo-full-pink.svg" />
+            <button id="diagram" class="btn active bg-transparent w-10/12 h-auto p-4 hover:bg-blue-900 text-blue-900 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded-md">Diagrams</button>
+            <hr class="w-10/12 mt-8 h-0.5 bg-zinc-400">
+            <button id="about" class="btn bg-transparent w-10/12 h-auto p-4 mt-8 hover:bg-blue-900 text-blue-900 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded-md">About</button>
+            <button id="settings" class="btn bg-transparent w-10/12 h-auto p-4 mt-4 hover:bg-blue-900 text-blue-900 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded-md">Settings</button>
+            <hr class="w-10/12 mt-8 h-0.5 bg-zinc-400">
+            <button id="backToIssue" class="bg-transparent w-10/12 h-auto p-4 mt-8 hover:bg-blue-900 text-blue-900 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded-md" onclick="backToJiraIssue('$projectkey', '$issuekey')">Cancel</button>      
           </div>
         </div>
     	</div>
@@ -43,26 +44,36 @@
         <!-- Diagram section        -->
       <div id="diagramSection">
         <div class="flex flex-row mt-8">
-          <div class="w-3/12 h-auto flex flex-col items-center box-border border border-black rounded p-4 pb-12 m-8">
-            <label class="mt-4 font-sans text-base antialiased font-bold">Select diagram</label>
-            <input type="text" id="filterText" oninput="searchProjects()" class="h-auto w-10/12 p-2 mt-6" placeholder="🔎 Search for project"/>    
+          <div class="2xl:w-3/12 sm:w-4/12 h-auto flex flex-col items-center bg-white box-border shadow-xl border rounded-md p-4 pb-6 m-8">
+            <label class="2xl:mt-8 sm:mt-4 font-sans text-xl text-blue-900 antialiased font-bold">Diagrams</label>
+            <div class="mt-6">
+              <label>Filter project</label>
+              <input type="text" id="filterText" oninput="searchProjects()" class="h-auto w-full px-4 py-2 mt-2 border border-gray-300 rounded" placeholder="🔎 Enter project title"/>    
+            </div>
             <script>getProjects('$userkey')</script>
-            <select id="projects" class="h-auto w-10/12 p-2 mt-6 block bg-white border-0 border-b-2 border-gray-700 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer" onchange="populateDiagramsInView()">
-              <option value="" selected disabled>Select project</option>
-            </select>
-            <div class="border-box w-10/12 h-48 mt-6 border border-black rounded overflow-auto scroll-smooth	">
+            <div class="mt-4 2xl:w-9/12 sm:w-10/12">
+              <label>Select project</label>
+              <select id="projects" class="h-auto w-full px-4 py-2 mt-2 block bg-white border border-gray-300 rounded-md appearance-none" onchange="populateDiagramsInView()">
+                <option value="" selected disabled>Select</option>
+              </select>
+            </div>
+            <div class="border-box 2xl:w-9/12 sm:w-10/12 h-48 mt-6 border border-gray-300 rounded-md overflow-auto scroll-smooth	">
               <ul id="diagrams" class="diagramsClass w-full h-full">
+                <div class="flex justify-center mt-4 opacity-50">
+                  <p>Select project to view diagrams list</p>
+                </div>
               </ul>
             </div>
             <!-- <button class="bg-transparent w-10/12 h-auto p-4 mt-8 hover:bg-blue-900 text-blue-900 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded" onclick="insertDiagramToPreviewPanel('$baseURL')">Insert diagram</button> -->
-            <button class="bg-transparent w-10/12 h-auto p-4 mt-8 hover:bg-blue-900 text-blue-900 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded" onclick="refreshDiagrams()">Refresh diagrams list</button>  
+            <button class="bg-blue-600 2xl:w-9/12 sm:w-10/12 h-auto p-4 2xl:my-12 sm:my-8 text-white py-2 px-4 border border-blue-600 rounded-md tracking-wider" onclick="refreshDiagrams()">Refresh diagrams list</button>  
           </div>
 
-          <div class="box-border w-6/12 p-4 h-auto m-8 flex flex-col items-center border border-black rounded">
-            <label class="mt-4 font-sans text-base antialiased font-bold">Preview diagram</label>
-            <div class="w-11/12 h-80 p-4 mt-12">
-              <label id="diagramTitle" class="text-blue-500"></label>
-              <div class=" flex items-center justify-center box-border border border-black rounded h-72 w-full p-2 mt-6">
+          <div class="box-border 2xl:w-6/12 sm:w-8/12 p-4 h-auto m-8 flex flex-col items-center border rounded-md shadow-xl bg-white">
+            <label class="2xl:mt-8 sm:mt-4 font-sans text-xl text-blue-900 antialiased font-bold">Diagram preview</label>
+            <div class="w-9/12 h-88 p-4">
+              <input id="diagramTitle" class="block px-0 w-auto text-sm text-gray-900 bg-transparent appearance-none outline-none" placeholder="Diagram title" readonly />
+            <!--  <label id="diagramTitle" class="text-blue-500"></label> -->
+              <div class=" flex items-center justify-center box-border border border-gray-300 rounded-md h-80 w-full p-2 mt-4">
                 <button disabled type="button" id="previewLoader" class="text-white bg-blue-900 hover:bg-blue-900 focus:ring-4 focus:ring-blue-900 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 inline-flex items-center" style="display: none;">
                   <svg aria-hidden="true" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB"/>
@@ -70,12 +81,13 @@
                   </svg>
                   Loading...
                 </button>
+                <label class="text-gray-400" id="diagramPlaceholder">Diagram</label>
                 <img class="max-w-full max-h-full" id="previewImage" />
               </div>
             </div>
-            <div class="flex flex-row space-x-8 w-fit h-auto my-8">
-              <button class="bg-transparent w-fit h-auto p-4 mt-8 hover:bg-blue-900 text-blue-900 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded" onclick="insertToJira('$projectkey', '$issuekey', '$baseURL')">Insert diagram in jira</button>
-              <button class="bg-transparent w-fit h-auto p-4 mt-8 hover:bg-blue-900 text-blue-900 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded" onclick="openInMC('$baseURL')">Open in Mermaid Chart</button>
+            <div class="flex flex-row space-x-8 w-fit h-auto my-2">
+              <button class="bg-blue-600 w-fit h-auto p-4 mt-8 text-white py-2 px-4 border border-blue-600 rounded-md tracking-wider" onclick="insertToJira('$projectkey', '$issuekey', '$baseURL')">Insert diagram into Jira</button>
+              <button class="bg-blue-600 w-fit h-auto p-4 mt-8 text-white py-2 px-4 border border-blue-600 rounded-md tracking-wider" onclick="openInMC('$baseURL')">Open in Mermaid Chart</button>
             </div>
           </div>
         </div>
@@ -83,29 +95,30 @@
 
         <!-- Settings section        -->
       <div style="display: none;" id="settingsSection">  
-        <div class=" flex flex-col items-center box-border self-center w-1/4 h-auto m-16 p-4 border border-black rounded">
-          <label class="mt-4 font-sans text-base antialiased font-bold">Settings</label>
-          <div>
+        <div class=" flex flex-col items-center box-border self-center 2xl:w-1/4 sm:w-4/12 h-auto m-16 p-4 border rounded-md shadow-xl">
+          <label class="mt-8 font-sans text-xl text-blue-900 antialiased font-bold">Settings</label>
+          <div class="w-10/12">
             <div class="p-2 mt-8">
-              <label>Base URL</label>
+              <label class="font-semibold">Base URL</label>
               #if(!$baseURL)
-                <input type="text" class="h-auto w-11/12 p-2 my-2 mt-4 border border-black rounded" id="baseURL" value="https://www.mermaidchart.com" />
+                <input type="text" class="h-auto w-full p-2 my-2 border border-gray-300 rounded-md" id="baseURL" value="https://www.mermaidchart.com" />
               #else
-                <input type="text" class="h-auto w-11/12 p-2 my-2 mt-4 border border-black rounded" id="baseURL" value="$baseURL" />
+                <input type="text" class="h-auto w-full p-2 my-2 border border-gray-300 rounded-md" id="baseURL" value="$baseURL" />
               #end
             </div>
             <div class="p-2 mt-2">
-              <label>Security Token</label>
+              <label class="font-semibold">Security token</label>
               #if(!$securityToken)
-                <input type="text" class="h-auto w-11/12 p-2 my-2 mt-4 border border-black rounded" id="securityToken" placeholder="Enter secure token" />
+                <input type="text" class="h-auto w-full p-2 my-2 border border-gray-300 rounded-md" id="securityToken" placeholder="Enter security token" />
               #else
-                <input type="text" class="h-auto w-11/12 p-2 my-2 mt-4 border border-black rounded" id="securityToken" value="$securityToken" />
+                <input type="text" class="h-auto w-full p-2 my-2 border border-gray-300 rounded-md" id="securityToken" value="$securityToken" />
               #end
-              <p class="mt-4 font-sans text-sm antialiased font-normal tracking-tight	text-justify leading-loose">To obtain a secure token, go to the <a href="$baseURL/app/user/settings" target="_blank" class="text-blue-500">Mermaid Chart Settings</a> page.</p>
+              <p class="mt-4 font-sans text-sm antialiased font-normal tracking-tight leading-loose">To obtain a security token, go to the <a href="$baseURL/app/user/settings" target="_blank" class="text-blue-700 underline">Mermaid Chart settings</a> page.</p>
             </div>
           </div>
-          <button class="bg-transparent w-10/12 h-auto p-4 m-4 hover:bg-blue-900 text-blue-900 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded" onclick="saveSettings('$userkey')">Save</button>
-          <label id="savedStatus" class="text-green-500"></label>
+          <button class="bg-blue-600 w-10/12 h-auto p-4 mx-8 text-white py-2 px-4 border border-blue-600 rounded-md tracking-wider" onclick="saveSettings('$userkey')">Save settings</button>
+          <label id="savedStatus" class="text-green-500 my-4"></label>
+          <label id="settingsToDiagrams" class="mb-8"></label>
         </div>      
       </div>
 

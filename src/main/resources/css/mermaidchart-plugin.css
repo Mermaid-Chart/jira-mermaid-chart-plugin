@@ -13,11 +13,12 @@ body {
 .main {
   display: grid;
   grid-template-columns: 19% 81%;
-  height: 90vh;
+  height: 88vh;
+  background-color: #F4F5F7;
 }
 
 #sidebar-wrapper {
-  background-color: lightgray;
+  /* background-color: lightgray; */
   height: 100vh;
   padding: 8px;
   width: 17rem;
@@ -144,6 +145,13 @@ h2 {
   padding: 10px;
   width: 100%;
   border: 2px solid #000;
+}
+
+select {
+  background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position-x: 90%;
+  background-position-y: 8px;
 }
 
 .drop-btn {
