@@ -1,13 +1,10 @@
 package com.plugin.mermaidchart.services;
 
 import java.io.IOException;
-import java.io.ByteArrayOutputStream;
-import javax.imageio.ImageIO;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 
 import javax.inject.Inject;
-import com.plugin.mermaidchart.models.Project;
 import com.plugin.mermaidchart.repositories.RestClient;
 
 import javax.ws.rs.Consumes;
@@ -30,7 +27,6 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import org.springframework.stereotype.Service;
 import java.util.*;
-import com.google.gson.reflect.TypeToken;  
 
 @Service
 @Path("/")
@@ -61,12 +57,9 @@ public class RestResources {
   public String saveConigurations(@Context final HttpServletRequest request) throws ClientProtocolException, IOException {
     String securityTkn = request.getParameter("securityToken");
     String userKey = request.getParameter("userKey");  
-    System.out.println(securityTkn);
-    System.out.println(userKey);
     String username = userManager.getRemoteUsername(request);
     if (userManager.isSystemAdmin(username)) {
       String baseUrl = request.getParameter("baseURL");
-      System.out.println(baseUrl);
       pluginSettingsFactory.createGlobalSettings().put(PLUGIN_STORAGE_KEY + ".baseURL", baseUrl);
       baseURL = baseUrl;
     }
@@ -82,8 +75,6 @@ public class RestResources {
   public String saveAttachmentConigurations(@Context final HttpServletRequest request) throws ClientProtocolException, IOException {
     String data = request.getParameter("data");
     String attachmentID = request.getParameter("attachmentID");
-    System.out.println(data);
-    System.out.println(attachmentID);
     pluginSettingsFactory.createSettingsForKey(attachmentID).put("" + attachmentID, data);
     return "Diagram configuration saved successfully.";
   }
@@ -94,7 +85,6 @@ public class RestResources {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAttachmentConigurations(@Context final HttpServletRequest request) throws ClientProtocolException, IOException {
     String attachmentID = request.getParameter("attachmentID");
-    System.out.println(attachmentID);
     return Response.ok(pluginSettingsFactory.createSettingsForKey(attachmentID).get("" + attachmentID)).build();
   }
 
@@ -103,7 +93,6 @@ public class RestResources {
   @Produces(MediaType.APPLICATION_JSON)
   public String getPNG(@Context final HttpServletRequest request) throws ClientProtocolException, IOException {
     String documentId = request.getParameter("documentId");
-    System.out.println(documentId);
     String URL = baseURL + "/raw/" + documentId + "?version=v0.1&theme=light&format=png";
     HttpResponse pngResponse = restClient.getData(URL, securityToken);
     String pngString = EntityUtils.toString(pngResponse.getEntity());
@@ -116,7 +105,6 @@ public class RestResources {
   @Produces(MediaType.APPLICATION_JSON)
   public String getProjects(@Context final HttpServletRequest request) throws ClientProtocolException, IOException {
     String userkey = request.getParameter("userkey");
-    System.out.println("User key is " + userkey);
     setParams(userkey);
     if(securityToken.equals("")){
       return "Invalid Security token";
@@ -125,7 +113,6 @@ public class RestResources {
     HttpResponse response = restClient.getData(URL, securityToken);
     Gson gson = new Gson();
     String json = EntityUtils.toString(response.getEntity());
-    // ArrayList<Project> projectsList = gson.fromJson(json,new TypeToken<List<Project>>() {}.getType());
     return json;
   }
 

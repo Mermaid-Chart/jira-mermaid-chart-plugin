@@ -45,18 +45,39 @@ AJS.$(window).on("load", function(){
 
 
     // when document is ready, append icon with mermaid chart in issue screen
-    AJS.$(document).ready(function(){
+    // AJS.$(document).ready(function(){
+    
+    const appendImageWithMC =  function(){
         let mcDiv = document.getElementById("com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-diagrams-link");
+        let firstChild  = mcDiv.firstChild.getElementsByTagName("img")[0];
         let img;
-        mcDiv
+        mcDiv && !firstChild
         ?   (mcDiv.parentElement.style.display = "flex",
             mcDiv.firstChild.style.display = "flex",
             img = new Image(),
-            img.setAttribute("style", "height: 16px; width: 16px; margin: 2px 5px 2px 0px;"),
+            img.setAttribute("style", "height: 13px; width: 13px; margin: auto 5px auto auto;"),
             img.src = "/jira/download/resources/com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-plugin-resources/images/mermaid-icon-16.png",
-            mcDiv.firstChild.prepend(img)    )
-        : ""
-    });
+            mcDiv.firstChild.prepend(img),
+            console.log("ndms ac", mcDiv.firstChild)    )
+        : console.log("Not found");
+    }
+
+
+
+
+    
+
+    
+
+    // document.querySelectorAll(".aui-buttons.pluggable-ops").forEach(btn => btn.addEventListener("click", appendImageWithMC))  ;
+    // appendImageWithMC();
+    // AJS.$("[id='com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-diagrams-link']").on("DOMContentLoaded", appendImageWithMC);
+    
+
+    
+
+    
+
 
     // function to add actions with mermaid attachments
     const attachmentActions = async function(){
@@ -70,6 +91,7 @@ AJS.$(window).on("load", function(){
                 attachment.appendChild(appendElements("edit", id, 1, attachmentDetails)),
                 attachment.appendChild(appendElements("refresh", id, 2.3, attachmentDetails)))
             : ""
+            attachmentDetails.length == 0 ? appendImageWithMC() : ""
         }
     }
 
@@ -91,6 +113,33 @@ AJS.$(window).on("load", function(){
 
         let attachmentThumbnail = document.getElementById('attachment_thumbnails')
         attachmentThumbnail ? attachmentActions() : ""
+
+
+
+        let mcDiv = document.getElementById("issue-content");
+        let cnt = 0;
+        const config = { attributes: true, childList: true, subtree: true };
+        const callback = (mutationList, observer) => {
+            for (const mutation of mutationList) {
+                console.log("jhvmsdbacnkiewj", mutation);
+                if (mutation.type === "childList") {
+                    console.log("Entered .... ", cnt);
+                    !cnt ? (appendImageWithMC(), attachmentActions()) : observer.disconnect();
+                    cnt++;
+                    break;
+                }
+            }
+        };
+        const observer = new MutationObserver(callback);
+        observer.observe(mcDiv, config);
+        
+        const setupThings = function(){
+            console.log("Ina  a fierbjsfkd");
+            cnt = 0;
+            observer.observe(mcDiv, config);
+        }
+        // mcDiv.addEventListener('click', setupThings);
+        AJS.$(document).on("click", ".aui-toolbar2-primary", setupThings);
 
 
 });
@@ -116,7 +165,7 @@ function getProjects(userKey){
 function populateProjectsInView(allProjects){
     let projectsSelector = document.getElementById('projects');
     projectsSelector.innerHTML = "";
-    allProjects.unshift({title: "Select", id: '', selected: true, disabled: true});
+    allProjects.unshift({title: "Projects", id: '', selected: true, disabled: true});
     allProjects.forEach(project => {
         let option = document.createElement('option');
         option.setAttribute('value', project.id);
@@ -194,6 +243,8 @@ function searchProjects(){
 function refreshDiagrams(){
     document.getElementById('previewImage').src = "";
     document.getElementById('diagramTitle').value = "";
+    document.getElementById('previewBox').classList.remove("border");
+    document.getElementById('previewBox').classList.remove("border-gray-300");
     let projectsSelector = document.getElementById('projects');
     let projectId = projectsSelector.options[projectsSelector.selectedIndex].value;
     let project = [{id: projectId}];
@@ -222,6 +273,8 @@ function insertDiagramToPreviewPanel(){
     previewLoader.style.display = "block";
     let selectedDiagram = getSelectedDiagram();
     document.getElementById("diagramTitle").value = selectedDiagram.title||"Untitled Diagram";
+    document.getElementById('previewBox').classList.add("border");
+    document.getElementById('previewBox').classList.add("border-gray-300");
     setPNG(selectedDiagram);
 }
 
@@ -417,16 +470,17 @@ AJS.$(document).on('click', '[id^="edit_"]', function(event){
     this.dispatchEvent(ctrlClickEvent);
 });
 
-// function to get jira issue key on issue screen    
-JIRA.bind(JIRA.Events.ISSUE_REFRESHED, function() {
-    issueKeyToSync = AJS.$("#key-val").text();
-});
+// // function to get jira issue key on issue screen    
+// JIRA.bind(JIRA.Events.ISSUE_REFRESHED, function() {
+//     issueKeyToSync = AJS.$("#key-val").text();
+// });
 
 // function to hanle click event on refresh icon on attachment
 AJS.$(document).on('click', '[id^="refresh_"]', async function(event){
     event.stopImmediatePropagation();
     let id = this.id.split('_')[1];
     diagramToSync = mermaidAttachments[id];
+    issueKeyToSync = AJS.$("#key-val").text();
     deleteAttachment(id);
     setPNG(diagramToSync, false);
 });

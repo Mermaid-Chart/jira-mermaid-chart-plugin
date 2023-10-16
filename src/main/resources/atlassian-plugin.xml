@@ -15,7 +15,6 @@
     <dependency>com.atlassian.auiplugin:ajs</dependency>
     <resource type="download" name="mermaidchart-plugin.css" location="css/mermaidchart-plugin.css"/>
     <resource type="download" name="mermaidchart-plugin.js" location="js/mermaidchart-plugin.js"/>
-    <resource type="download" name="mermaid.min.js" location="js/mermaid.min.js"/>
     <resource type="download" name="tailwind.js" location="js/tailwind.js"/>
     <resource type="download" name="images/" location="/images"/>
     <context>atl.general</context>

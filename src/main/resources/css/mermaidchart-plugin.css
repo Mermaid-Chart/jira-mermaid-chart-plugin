@@ -12,16 +12,15 @@ body {
 
 .main {
   display: grid;
-  grid-template-columns: 19% 81%;
+  grid-template-columns: 18% 82%;
   height: 88vh;
-  background-color: #F4F5F7;
 }
 
 #sidebar-wrapper {
-  /* background-color: lightgray; */
+  background-color: #F4F5F7;
   height: 100vh;
   padding: 8px;
-  width: 17rem;
+  width: auto;
 }
 
 .list-group {
@@ -279,8 +278,7 @@ select {
 }
 
 .diagramsClass li.selected {
-  background-color: #0947A6;
-  color: #ccc;
+  background-color: #E1E4E9;
 }
 
 .responsive {
@@ -354,3 +352,7 @@ ul, #myUL {
 .cp-image-container{
   width: auto !important;
 }
+
+/* #com\.plugin\.mermaidchart\.mermaidchart-plugin\:mermaidchart-diagrams-link::before {
+  content: appendImageWithMC();
+} */
