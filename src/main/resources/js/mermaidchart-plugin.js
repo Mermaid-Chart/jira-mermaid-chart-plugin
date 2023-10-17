@@ -49,13 +49,13 @@ AJS.$(window).on("load", function(){
     // append icon with mermaid chart in issue screen
     const appendImageWithMC =  function(){
         let mcDiv = document.getElementById("com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-diagrams-link");
-        let firstChild  = mcDiv.firstChild.getElementsByTagName("img")[0];
+        let firstChild  = mcDiv?.firstChild.getElementsByTagName("img")[0];
         let img;
         mcDiv && !firstChild
         ?   (mcDiv.parentElement.style.display = "flex",
             mcDiv.firstChild.style.display = "flex",
             img = new Image(),
-            img.setAttribute("style", "height: 13px; width: 13px; margin: auto 5px auto auto;"),
+            img.setAttribute("style", "height: 11px; width: 11px; margin: auto 5px auto auto;"),
             img.src = "/jira/download/resources/com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-plugin-resources/images/mermaid-icon-16.png",
             mcDiv.firstChild.prepend(img))
         : console.log("Not found");
@@ -66,7 +66,7 @@ AJS.$(window).on("load", function(){
     // function to add actions with mermaid attachments
     const attachmentActions = async function(){
         let allAttachments = document.getElementsByClassName("attachment-delete");
-        allAttachments.length == 0 ? appendImageWithMC() : ""
+        allAttachments?.length == 0 ? appendImageWithMC() : ""
         for(attachment of allAttachments) {
             let id = attachment.firstChild.id.split("_")[1];
             let attachmentDetails = await getAttachmentConfigurations(id);

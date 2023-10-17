@@ -344,8 +344,8 @@ ul, #myUL {
 }
 
 .btn.active {
-  background-color: #1e3a8a;
-  border-color: #1e3a8a;
+  background-color: #2563eb;
+  border-color: #2563eb;
   color: white;
 }
 
@@ -353,6 +353,39 @@ ul, #myUL {
   width: auto !important;
 }
 
-/* #com\.plugin\.mermaidchart\.mermaidchart-plugin\:mermaidchart-diagrams-link::before {
-  content: appendImageWithMC();
-} */
+#attachmentmodule #attachment_thumbnails .attachment-content {
+    border: none;
+    border-radius: 3px;
+    height: 220px;
+    margin: 0 15px 15px 0;
+    padding: 0px;
+}
+
+#attachment_thumbnails .attachment-delete {
+  position: relative;
+  top: 20px;
+  left: 0;
+  right: auto;
+  padding: 0;
+  margin: 0;
+}
+
+#attachmentmodule #attachment_thumbnails .attachment-content dl .attachment-date {
+  color: #707070;
+  font-size: 12px;
+  top: 20px;
+}
+
+#attachmentmodule #attachment_thumbnails .attachment-content dl .attachment-size, #attachmentmodule #attachment_thumbnails .attachment-content dl .attachment-date {
+  color: #707070;
+  font-size: 12px;
+  top: 20px;
+}
+
+#attachment_thumbnails dl {
+  clear: left;
+  display: block;
+  height: 60px;
+  overflow: hidden;
+  width: 200px;
+}
