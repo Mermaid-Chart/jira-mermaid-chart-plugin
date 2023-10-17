@@ -130,8 +130,8 @@
               <div id="titleBar" class="w-full h-fit text-center mt-8">
                 <label class="font-sans	text-2xl font-bold ">About Mermaid Chart</label>
               </div>
-              <div id="body" class="w-10/12 h-auto my-12">
-                <p class="font-sans text-base antialiased font-normal tracking-wide	text-justify leading-loose">Easily create complex diagrams from markdown-style text and collaborate with team members in real-time with Mermaid Chart.
+              <div id="body" class="w-10/12 h-auto my-8">
+                <p class="font-sans text-base antialiased font-normal tracking-wide	text-left leading-loose">Easily create complex diagrams from markdown-style text and collaborate with team members in real-time with Mermaid Chart.
                 <br> <br> Mermaid Chart’s Jira plugin allows you to import your diagrams into a Jira ticket and provides a link to edit your diagrams on the Mermaid Chart platform.
                 <br> <br> For more info, visit our website at <a href="https://www.mermaidchart.com" target="_blank" class="text-blue-500">www.mermaidchart.com.</a> </p>
               </div>

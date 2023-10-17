@@ -8,6 +8,8 @@ var beforeAboutSectionId;
 var mermaidAttachments = {};
 var diagramToSync;
 var issueKeyToSync;
+var lastSelectedProject;
+var lastSelectedProjectDiagrams;
 
 // when window loaded perform default validations and actions
 AJS.$(window).on("load", function(){
@@ -44,9 +46,7 @@ AJS.$(window).on("load", function(){
     document.getElementById('validateSettings') ? towardsSetting() : ''
 
 
-    // when document is ready, append icon with mermaid chart in issue screen
-    // AJS.$(document).ready(function(){
-    
+    // append icon with mermaid chart in issue screen
     const appendImageWithMC =  function(){
         let mcDiv = document.getElementById("com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-diagrams-link");
         let firstChild  = mcDiv.firstChild.getElementsByTagName("img")[0];
@@ -57,31 +57,16 @@ AJS.$(window).on("load", function(){
             img = new Image(),
             img.setAttribute("style", "height: 13px; width: 13px; margin: auto 5px auto auto;"),
             img.src = "/jira/download/resources/com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-plugin-resources/images/mermaid-icon-16.png",
-            mcDiv.firstChild.prepend(img),
-            console.log("ndms ac", mcDiv.firstChild)    )
+            mcDiv.firstChild.prepend(img))
         : console.log("Not found");
     }
-
-
-
-
-    
-
-    
-
-    // document.querySelectorAll(".aui-buttons.pluggable-ops").forEach(btn => btn.addEventListener("click", appendImageWithMC))  ;
-    // appendImageWithMC();
-    // AJS.$("[id='com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-diagrams-link']").on("DOMContentLoaded", appendImageWithMC);
-    
-
-    
-
-    
+    appendImageWithMC();
 
 
     // function to add actions with mermaid attachments
     const attachmentActions = async function(){
         let allAttachments = document.getElementsByClassName("attachment-delete");
+        allAttachments.length == 0 ? appendImageWithMC() : ""
         for(attachment of allAttachments) {
             let id = attachment.firstChild.id.split("_")[1];
             let attachmentDetails = await getAttachmentConfigurations(id);
@@ -91,8 +76,8 @@ AJS.$(window).on("load", function(){
                 attachment.appendChild(appendElements("edit", id, 1, attachmentDetails)),
                 attachment.appendChild(appendElements("refresh", id, 2.3, attachmentDetails)))
             : ""
-            attachmentDetails.length == 0 ? appendImageWithMC() : ""
         }
+
     }
 
     function appendElements(type, id, margin, attachment){
@@ -111,37 +96,30 @@ AJS.$(window).on("load", function(){
         return anchor;
     }
 
-        let attachmentThumbnail = document.getElementById('attachment_thumbnails')
-        attachmentThumbnail ? attachmentActions() : ""
+    let attachmentThumbnail = document.getElementById('attachment_thumbnails')
+    attachmentThumbnail ? attachmentActions() : ""
 
-
-
-        let mcDiv = document.getElementById("issue-content");
-        let cnt = 0;
-        const config = { attributes: true, childList: true, subtree: true };
-        const callback = (mutationList, observer) => {
-            for (const mutation of mutationList) {
-                console.log("jhvmsdbacnkiewj", mutation);
-                if (mutation.type === "childList") {
-                    console.log("Entered .... ", cnt);
-                    !cnt ? (appendImageWithMC(), attachmentActions()) : observer.disconnect();
-                    cnt++;
-                    break;
-                }
+    // MutationObserver Setup on issue div to manage attachments actions as well as mermaid chart icon.
+    let mcDiv = document.getElementById("issue-content");
+    let cnt = 0;
+    const config = { attributes: true, childList: true, subtree: true };
+    const callback = (mutationList, observer) => {
+        for (const mutation of mutationList) {
+            if (mutation.type === "childList") {
+                !cnt ? (appendImageWithMC(), attachmentActions()) : observer.disconnect();
+                cnt++;
+                break;
             }
-        };
-        const observer = new MutationObserver(callback);
-        observer.observe(mcDiv, config);
-        
-        const setupThings = function(){
-            console.log("Ina  a fierbjsfkd");
-            cnt = 0;
-            observer.observe(mcDiv, config);
         }
-        // mcDiv.addEventListener('click', setupThings);
-        AJS.$(document).on("click", ".aui-toolbar2-primary", setupThings);
-
-
+    };
+    const observer = new MutationObserver(callback);
+    // observer.observe(mcDiv, config);
+        
+    const setupThings = function(){
+        cnt = 0;
+        observer.observe(mcDiv, config);
+    }
+    AJS.$(document).on("click", ".aui-toolbar2-primary, #attachment_thumbnails, #viewissuesidebar", setupThings);
 });
 
 
@@ -174,13 +152,12 @@ function populateProjectsInView(allProjects){
         option.disabled = project.disabled;
         projectsSelector.appendChild(option);
     });
+    let lastProject = JSON.parse(localStorage.getItem("last_selected_project"));
+    lastProject ? (projectsSelector.value = lastProject[0].id, populateDiagramsInView()) : ""
 }
 
 // function to get diagrams against projects list
 function getAllDiagrams(projects, willPopulate = false){
-    // diagramsList= [];
-    // let diagramsSection = document.getElementById("diagrams");
-    // diagramsSection.innerHTML = '';
     projects.forEach(project => {
         AJS.$.ajax({
             url: AJS.contextPath() + "/rest/mermaid-chart/1.0/resources/diagrams",
@@ -199,7 +176,11 @@ function getAllDiagrams(projects, willPopulate = false){
 function populateDiagramsInView(){
     let projectsSelector = document.getElementById('projects');
     let projectId = projectsSelector.options[projectsSelector.selectedIndex].value;
-    let diagramsOfSelectedProject = diagramsList[projectId];
+    lastSelectedProject = projectsList.filter(project => project.id === projectId);
+    localStorage.setItem("last_selected_project", JSON.stringify(lastSelectedProject))
+    diagramsList[projectId] = diagramsList[projectId] || JSON.parse(localStorage.getItem("last_selected_project_diagrams"));
+    let diagramsOfSelectedProject = lastSelectedProjectDiagrams = diagramsList[projectId];
+    localStorage.setItem("last_selected_project_diagrams", JSON.stringify(lastSelectedProjectDiagrams));
     let diagramsSection = document.getElementById("diagrams");
     diagramsSection.innerHTML = '';
     if(!diagramsOfSelectedProject.length){
@@ -302,7 +283,6 @@ function insertToJira(projectkey = "", issuekey = "", baseURL = "", redirect = t
     }).done(function(attachmentresponse) {
         let attachmentId = attachmentresponse[0].id;
         let diagram = diagramToConfigure||getSelectedDiagram(); 
-        console.log(diagram);
         let payload = {
             data: JSON.stringify({
                 documentID: diagram.documentID, 
@@ -401,7 +381,6 @@ async function getAttachmentConfigurations(attId){
         data: { attachmentID: attId },
         dataType: "json",
         success: function(diagramsArray){
-            console.log(diagramsArray);
             diagram = diagramsArray
         }
     });
