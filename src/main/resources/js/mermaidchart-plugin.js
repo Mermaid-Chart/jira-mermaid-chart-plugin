@@ -71,10 +71,10 @@ AJS.$(window).on("load", function(){
             let id = attachment.firstChild.id.split("_")[1];
             let attachmentDetails = await getAttachmentConfigurations(id);
             attachmentDetails
-            ?   (attachment.style.width = "60px",
+            ?   (attachment.style.width = "65px",
                 mermaidAttachments[id] = attachmentDetails,
-                attachment.appendChild(appendElements("edit", id, 1, attachmentDetails)),
-                attachment.appendChild(appendElements("refresh", id, 2.3, attachmentDetails)))
+                attachment.appendChild(appendElements("edit", id, 1.5, attachmentDetails)),
+                attachment.appendChild(appendElements("refresh", id, 3, attachmentDetails)))
             : ""
         }
 
@@ -120,6 +120,7 @@ AJS.$(window).on("load", function(){
         observer.observe(mcDiv, config);
     }
     AJS.$(document).on("click", ".aui-toolbar2-primary, #attachment_thumbnails, #viewissuesidebar", setupThings);
+    AJS.$(document).on("load change", "#issue-content", setupThings)
 });
 
 

@@ -356,31 +356,31 @@ ul, #myUL {
 #attachmentmodule #attachment_thumbnails .attachment-content {
     border: none;
     border-radius: 3px;
-    height: 220px;
+    height: 230px;
     margin: 0 15px 15px 0;
     padding: 0px;
 }
 
 #attachment_thumbnails .attachment-delete {
-  position: relative;
-  top: 20px;
-  left: 0;
-  right: auto;
-  padding: 0;
-  margin: 0;
+  position: absolute;
+    top: 41px;
+    left: auto;
+    right: 0;
+    padding-top: 3px;
+    margin: 0;
 }
 
-#attachmentmodule #attachment_thumbnails .attachment-content dl .attachment-date {
+/* #attachmentmodule #attachment_thumbnails .attachment-content dl .attachment-date {
   color: #707070;
   font-size: 12px;
   top: 20px;
-}
+} */
 
-#attachmentmodule #attachment_thumbnails .attachment-content dl .attachment-size, #attachmentmodule #attachment_thumbnails .attachment-content dl .attachment-date {
+/* #attachmentmodule #attachment_thumbnails .attachment-content dl .attachment-size, #attachmentmodule #attachment_thumbnails .attachment-content dl .attachment-date {
   color: #707070;
   font-size: 12px;
-  top: 20px;
-}
+  top: 25px;
+} */
 
 #attachment_thumbnails dl {
   clear: left;
