@@ -45,37 +45,21 @@ AJS.$(window).on("load", function(){
     }
     document.getElementById('validateSettings') ? towardsSetting() : ''
 
-
-    // append icon with mermaid chart in issue screen
-    const appendImageWithMC =  function(){
-        let mcDiv = document.getElementById("com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-diagrams-link");
-        let firstChild  = mcDiv?.firstChild.getElementsByTagName("img")[0];
-        let img;
-        mcDiv && !firstChild
-        ?   (mcDiv.parentElement.style.display = "flex",
-            mcDiv.firstChild.style.display = "flex",
-            img = new Image(),
-            img.setAttribute("style", "height: 11px; width: 11px; margin: auto 5px auto auto;"),
-            img.src = "/jira/download/resources/com.plugin.mermaidchart.mermaidchart-plugin:mermaidchart-plugin-resources/images/mermaid-icon-16.png",
-            mcDiv.firstChild.prepend(img))
-        : console.log("Not found");
-    }
-    appendImageWithMC();
-
-
     // function to add actions with mermaid attachments
     const attachmentActions = async function(){
         let allAttachments = document.getElementsByClassName("attachment-delete");
-        allAttachments?.length == 0 ? appendImageWithMC() : ""
         for(attachment of allAttachments) {
             let id = attachment.firstChild.id.split("_")[1];
-            let attachmentDetails = await getAttachmentConfigurations(id);
-            attachmentDetails
-            ?   (attachment.style.width = "65px",
-                mermaidAttachments[id] = attachmentDetails,
-                attachment.appendChild(appendElements("edit", id, 1.5, attachmentDetails)),
-                attachment.appendChild(appendElements("refresh", id, 3, attachmentDetails)))
-            : ""
+            let childs = attachment.getElementsByTagName('a');
+            if(!(childs.length > 1)){
+                let attachmentDetails = await getAttachmentConfigurations(id);
+                attachmentDetails
+                ?   (attachment.style.width = "65px",
+                    mermaidAttachments[id] = attachmentDetails,
+                    attachment.appendChild(appendElements("edit", id, 1.5, attachmentDetails)),
+                    attachment.appendChild(appendElements("refresh", id, 3, attachmentDetails)))
+                : ""
+            }
         }
 
     }
@@ -97,30 +81,9 @@ AJS.$(window).on("load", function(){
     }
 
     let attachmentThumbnail = document.getElementById('attachment_thumbnails')
-    attachmentThumbnail ? attachmentActions() : ""
+    attachmentThumbnail ? (attachmentActions()) : (console.log("Attachment thumbnails not found"))
 
-    // MutationObserver Setup on issue div to manage attachments actions as well as mermaid chart icon.
-    let mcDiv = document.getElementById("issue-content");
-    let cnt = 0;
-    const config = { attributes: true, childList: true, subtree: true };
-    const callback = (mutationList, observer) => {
-        for (const mutation of mutationList) {
-            if (mutation.type === "childList") {
-                !cnt ? (appendImageWithMC(), attachmentActions()) : observer.disconnect();
-                cnt++;
-                break;
-            }
-        }
-    };
-    const observer = new MutationObserver(callback);
-    // observer.observe(mcDiv, config);
-        
-    const setupThings = function(){
-        cnt = 0;
-        observer.observe(mcDiv, config);
-    }
-    AJS.$(document).on("click", ".aui-toolbar2-primary, #attachment_thumbnails, #viewissuesidebar", setupThings);
-    AJS.$(document).on("load change", "#issue-content", setupThings)
+    AJS.$(document).on("mouseover", "#attachmentmodule", attachmentActions);
 });
 
 
@@ -409,6 +372,14 @@ AJS.$(document).on("click", "#modalCloseBtn", function(){
     document.getElementById("aboutSection").style.display = "none";
     document.getElementById(beforeAboutSectionId).click();
 });
+
+window.onclick = function(event) {
+    let modal = document.getElementById("about-modal");
+    if (event.target == modal) {
+        document.getElementById("aboutSection").style.display = "none";
+        document.getElementById(beforeAboutSectionId).click();
+    }
+}
 
 // function to get the diagram from mermaid chart and configure accordingly.
 function setPNG(diagram, showPreview = true){
