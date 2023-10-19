@@ -52,6 +52,7 @@ public class ResourcesListing extends HttpServlet{
     this.pluginSettingsFactory = pluginSettingsFactory;
   }
 
+  // invoked by plugin descriptor to initialize and start a plugin
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String username = userManager.getRemoteUsername(request);

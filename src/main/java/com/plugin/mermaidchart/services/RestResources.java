@@ -45,12 +45,14 @@ public class RestResources {
   @ComponentImport
   private final PluginSettingsFactory pluginSettingsFactory;
 
+  // constructor injection
   @Inject
   public RestResources(UserManager userManager, PluginSettingsFactory pluginSettingsFactory) {
     this.userManager = userManager;
     this.pluginSettingsFactory = pluginSettingsFactory;
   }
 
+  // save security token and baseURL in plugin data console
   @Path("/resources/saveConfigurations")
   @POST
   @Produces(MediaType.APPLICATION_JSON)
@@ -69,6 +71,7 @@ public class RestResources {
   }
   
 
+  // save attachment configurations in plugin data console
   @Path("/resources/saveAttachmentConfigurations")
   @POST
   @Produces(MediaType.APPLICATION_JSON)
@@ -79,7 +82,7 @@ public class RestResources {
     return "Diagram configuration saved successfully.";
   }
 
-
+  // get attachment configurations from plugin data console
   @Path("/resources/getAttachmentConfigurations")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
@@ -88,6 +91,7 @@ public class RestResources {
     return Response.ok(pluginSettingsFactory.createSettingsForKey(attachmentID).get("" + attachmentID)).build();
   }
 
+  // get PNG file from mermaid chart pre rendering service through rest client
   @Path("/resources/getPNG")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
@@ -99,7 +103,7 @@ public class RestResources {
     return pngString;
   }
 
-
+  // get projects from mermaid chart through rest client
   @Path("/resources/projects")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
@@ -116,6 +120,7 @@ public class RestResources {
     return json;
   }
 
+  // get diagrams from mermaid chart through rest client
   @Path("/resources/diagrams")
   @GET
   @Consumes(MediaType.APPLICATION_JSON)
@@ -128,6 +133,7 @@ public class RestResources {
     return json;
   }
 
+  // get diagram information from mermaid chart (not used)
   @Path("/resources/diagramInfo")
   @GET
   @Consumes(MediaType.APPLICATION_JSON)
@@ -140,6 +146,7 @@ public class RestResources {
     return json;
   }
 
+  // set parameters to be used in rest endpoints
   public void setParams(String userKey){
     baseURL = pluginSettingsFactory.createGlobalSettings().get(PLUGIN_STORAGE_KEY + ".baseURL");
     securityToken = pluginSettingsFactory.createSettingsForKey(userKey).get(PLUGIN_STORAGE_KEY + ".securityToken");

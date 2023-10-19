@@ -82,6 +82,7 @@
                   Loading...
                 </button>
                 <label class="text-gray-400" id="diagramPlaceholder">Select a diagram to preview</label>
+                <label class="text-gray-400" id="diagramError" style="display: none;">Unable to display image as diagram contains syntax errors.</label>
                 <img class="max-w-full max-h-full" id="previewImage" />
               </div>
             </div>
