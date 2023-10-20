@@ -43,13 +43,13 @@
 
         <!-- Diagram section        -->
       <div id="diagramSection">
-        <div class="flex flex-row mt-8">
-          <div class="2xl:w-3/12 sm:w-4/12 h-auto flex flex-col items-center bg-white box-border border-2 border-gray-200 p-4 pb-12 m-8">
+        <div class="flex flex-auto flex-wrap mt-8">
+          <div class="2xl:w-3/12 w-4/12 h-auto flex flex-col items-center bg-white box-border border-2 border-gray-200 p-4 pb-12 m-8">
             <label class="2xl:mt-8 sm:mt-4 font-sans text-xl text-blue-900 antialiased font-bold">Diagrams</label>
             <button class="bg-transparent 2xl:w-9/12 sm:w-10/12 h-auto p-4 2xl:my-4 sm:my-4 py-2 px-4 hover:bg-blue-600 text-blue-600 hover:text-white py-2 px-4 border border-blue-600 hover:border-transparent rounded-md tracking-wider" onclick="refreshDiagrams()">Refresh diagrams list</button>  
             <div class="mt-6 2xl:w-9/12 sm:w-10/12">
               <label>Filter project</label>
-              <input type="text" id="filterText" oninput="searchProjects()" class="h-auto w-full px-4 py-2 mt-2 border border-gray-300 rounded" placeholder="🔎 Enter project title"/>    
+              <input type="text" id="filterText" oninput="searchProjects()" class="h-auto w-full px-4 py-2 mt-2 border border-gray-300 rounded-md" placeholder="🔎 Enter project title"/>    
             </div>
             <script>getProjects('$userkey')</script>
             <div class="mt-4 2xl:w-9/12 sm:w-10/12">
@@ -68,12 +68,12 @@
             <!-- <button class="bg-transparent w-10/12 h-auto p-4 mt-8 hover:bg-blue-900 text-blue-900 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded" onclick="insertDiagramToPreviewPanel('$baseURL')">Insert diagram</button> -->
           </div>
 
-          <div class="box-border 2xl:w-6/12 sm:w-8/12 p-4 h-auto m-8 flex flex-col items-center border-2 border-gray-200 bg-white">
+          <div class="box-border 2xl:w-6/12 w-8/12 p-4 h-auto m-8 flex flex-col items-center border-2 border-gray-200 bg-white">
             <label class="2xl:mt-8 sm:mt-4 font-sans text-xl text-blue-900 antialiased font-bold">Diagram preview</label>
-            <div class="w-9/12 h-88 p-4">
+            <div class="w-9/12 h-2/3 p-4">
               <input id="diagramTitle" class="block px-0 w-auto text-sm text-gray-900 bg-transparent appearance-none outline-none" readonly />
             <!--  <label id="diagramTitle" class="text-blue-500"></label> -->
-              <div id="previewBox" class=" flex items-center justify-center box-border rounded-md h-80 w-full p-2 mt-4">
+              <div id="previewBox" class=" flex items-center justify-center box-border rounded-md h-3/5 w-full p-2 mt-4">
                 <button disabled type="button" id="previewLoader" class="text-white bg-blue-600 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 inline-flex items-center" style="display: none;">
                   <svg aria-hidden="true" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB"/>
@@ -96,22 +96,24 @@
 
         <!-- Settings section        -->
       <div style="display: none;" id="settingsSection">  
-        <div class=" flex flex-col items-center box-border self-center 2xl:w-1/4 sm:w-4/12 h-auto m-16 p-4 border-2 border-gray-200">
-          <label class="mt-8 font-sans text-xl text-blue-900 antialiased font-bold">Settings</label>
-          <div class="w-10/12">
-            <div class="p-2 mt-8">
-              <label class="font-semibold">Security token</label>
-              #if(!$securityToken)
-                <input type="text" class="h-auto w-full p-2 my-2 border border-gray-300 rounded-md" id="securityToken" placeholder="Enter security token" />
-              #else
-                <input type="text" class="h-auto w-full p-2 my-2 border border-gray-300 rounded-md" id="securityToken" value="$securityToken" />
-              #end
-              <p class="mt-4 font-sans text-sm antialiased font-normal tracking-tight leading-loose">To obtain a security token, go to the <a href="$baseURL/app/user/settings" target="_blank" class="text-blue-700 underline">Mermaid Chart settings</a> page.</p>
+        <div class="flex flex-auto flex-wrap mt-8">
+          <div class=" flex flex-col items-center box-border self-center 2xl:w-1/4 sm:w-4/12 h-auto m-8 p-4 border-2 border-gray-200">
+            <label class="mt-8 font-sans text-xl text-blue-900 antialiased font-bold">Settings</label>
+            <div class="w-10/12">
+              <div class="p-2 mt-8">
+                <label class="font-semibold">Security token</label>
+                #if(!$securityToken)
+                  <input type="text" class="h-auto w-full p-2 my-2 border border-gray-300 rounded-md" id="securityToken" placeholder="Enter security token" />
+                #else
+                  <input type="text" class="h-auto w-full p-2 my-2 border border-gray-300 rounded-md" id="securityToken" value="$securityToken" />
+                #end
+                <p class="mt-4 font-sans text-sm antialiased font-normal tracking-tight leading-loose">To obtain a security token, go to the <a href="$baseURL/app/user/settings" target="_blank" class="text-blue-700 underline">Mermaid Chart settings</a> page.</p>
+              </div>
             </div>
-          </div>
-          <button class="bg-blue-600 w-10/12 h-auto p-4 mx-8 2xl:my-6 sm:my-4 text-white py-2 px-4 border border-blue-600 rounded-md tracking-wider" onclick="saveSettings('$userkey')">Save</button>
-          <label id="savedStatus" class="text-green-500 my-4"></label>
-          <label id="settingsToDiagrams" class="mb-2"></label>
+            <button class="bg-blue-600 w-10/12 h-auto p-4 mx-8 2xl:my-6 sm:my-4 text-white py-2 px-4 border border-blue-600 rounded-md tracking-wider" onclick="saveSettings('$userkey')">Save</button>
+            <label id="savedStatus" class="text-green-500 my-4"></label>
+            <label id="settingsToDiagrams" class="mb-2"></label>
+          </div>      
         </div>      
       </div>
 
