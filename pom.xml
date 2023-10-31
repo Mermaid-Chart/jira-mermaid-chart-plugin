@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.plugin.mermaidchart</groupId>
     <artifactId>mermaidchart-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <organization>
         <name>Mermaid Chart</name>
         <url>http://www.mermaidchart.com/</url>
