@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.plugin.mermaidchart</groupId>
     <artifactId>mermaidchart-plugin</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <organization>
         <name>Mermaid Chart</name>
         <url>http://www.mermaidchart.com/</url>
@@ -12,7 +12,7 @@
     <name>mermaidchart-plugin</name>
     <description>This plugin enables mermaid diagrams to be viewed and edited in Jira issues</description>
     <packaging>atlassian-plugin</packaging>
-    
+
     <dependencies>
         <dependency>
             <groupId>com.atlassian.templaterenderer</groupId>
@@ -53,7 +53,7 @@
             <version>${atlassian.spring.scanner.version}</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
@@ -231,7 +231,7 @@
                         <goals>
                             <goal>atlassian-spring-scanner</goal>
                         </goals>
-                        <phase>process-classes</phase> 
+                        <phase>process-classes</phase>
                     </execution>
                 </executions>
                 <configuration>
